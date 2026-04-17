@@ -1,0 +1,161 @@
+/* App.css */
+
+/* Desktop */
+.Desktop {
+    position: relative;
+    width: 1440px;
+    height: 2048px;
+    background: #FFFFFF;
+}
+
+/* OnSign */
+.onsign {
+    position: absolute;
+    width: 209px;
+    height: 87px;
+    left: calc(50% - 209px/2 - 501.5px);
+    top: 47px;
+    font-family: 'Noto Sans';
+    font-style: normal;
+    font-weight: 800;
+    font-size: 64px;
+    line-height: 87px;
+    color: #3B493F;
+}
+
+/* Line */
+.Line {
+    position: absolute;
+    width: 1275px;
+    height: 0px;
+    left: calc(50% - 1275px/2 - 2.5px);
+    top: 160px;
+    border: 2px solid #3B493F;
+}
+
+/* Home */
+.home {
+    position: absolute;
+    width: 15px;
+    height: 19px;
+    left: 1224px;
+    top: 124px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 19px;
+    color: #3B493F;
+}
+
+/* Logout */
+.logout {
+    position: absolute;
+    width: 59px;
+    height: 19px;
+    left: 1267px;
+    top: 124px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 19px;
+    color: #3B493F;
+}
+
+/* LearningStatus */
+.learning-status {
+    box-sizing: border-box;
+    position: absolute;
+    width: 1275px;
+    height: 314px;
+    left: calc(50% - 1275px/2 - 2.5px);
+    top: 279px;
+    background: #FFFFFF;
+    border: 2px solid #245532;
+    border-radius: 30px;
+}
+
+/* Leval */
+.leval {
+    box-sizing: border-box;
+    position: absolute;
+    width: 1275px;
+    height: 285px;
+    left: 82px;
+    top: 677px;
+    background: #FFFFFF;
+    border: 2px solid #245532;
+    border-radius: 30px;
+}
+
+/* Reward */
+.reward {
+    box-sizing: border-box;
+    position: absolute;
+    width: 1275px;
+    height: 285px;
+    left: 82px;
+    top: 1075px;
+    background: #FFFFFF;
+    border: 2px solid #245532;
+    border-radius: 30px;
+}
+
+/* Step */
+.step {
+    position: absolute;
+    width: 96px;
+    height: 39px;
+    left: 211px;
+    top: 1149px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 39px;
+    text-align: center;
+    color: #245532;
+}
+
+/* FirstWord */
+.first-word {
+    position: absolute;
+    width: 146px;
+    height: 58px;
+    left: calc(50% - 146px/2 - 458px);
+    top: 1218px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 29px;
+    text-align: center;
+    color: #245532;
+}
+
+/* RecentActivity */
+.recent-activity {
+    box-sizing: border-box;
+    position: absolute;
+    width: 620px;
+    height: 285px;
+    left: 82px;
+    top: 1481px;
+    background: #FFFFFF;
+    border: 2px solid #245532;
+    border-radius: 30px;
+}
+
+/* WeeklyGoal */
+.weekly-goal {
+    box-sizing: border-box;
+    position: absolute;
+    width: 620px;
+    height: 285px;
+    left: 737px;
+    top: 1481px;
+    background: #FFFFFF;
+    border: 2px solid #245532;
+    border-radius: 30px;
+}
