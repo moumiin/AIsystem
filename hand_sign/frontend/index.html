@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> 수화 공부!</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<!-- ── 헤더 ───────────────────────────────────────────────────────────── -->
+<header class="app-header">
+  <h1> 수화 공부!</h1>
+  <span class="header-sub"> AI 수화 교육 서비스</span>
+</header>
+
+<!-- ── 메인 ───────────────────────────────────────────────────────────── -->
+<main class="app-main">
+
+  <!-- ── 패널 행: 시범 | 점수 | 웹캠 ──────────────────────────────────── -->
+  <div class="panels-row">
+
+    <!-- 왼쪽: 3D 시범 -->
+    <div class="panel demo-panel">
+      <div class="panel-header">
+        <h2>📖 시범 보기</h2>
+        <div class="sign-badge">
+          <span class="sign-badge-emoji" id="sign-badge-emoji">👇</span>
+          <span class="sign-badge-name"  id="sign-badge-name">수화 선택</span>
+        </div>
+      </div>
+
+      <div class="canvas-wrapper">
+        <canvas id="three-canvas"></canvas>
+      </div>
+
+      <div class="sign-description" id="sign-description">
+        아래 목록에서 배울 수화를 선택하세요
+      </div>
+    </div>
+
+    <!-- 가운데: 점수 -->
+    <div class="score-center">
+      <div class="score-ring-wrapper">
+        <svg class="score-ring" viewBox="0 0 120 120">
+          <circle class="score-ring-bg"   cx="60" cy="60" r="50"/>
+          <circle class="score-ring-fill" id="score-ring-fill"
+                  cx="60" cy="60" r="50"
+                  stroke-dasharray="314.16"
+                  stroke-dashoffset="314.16"
+                  transform="rotate(-90 60 60)"/>
+        </svg>
+        <div class="score-number">
+          <span id="score-value">0</span>
+          <span>점</span>
+        </div>
+      </div>
+
+      <div class="score-label" id="score-label">대기중</div>
+
+      <!-- 손가락 인디케이터 -->
+      <div class="finger-dots">
+        <div class="finger-dot" title="엄지">👍</div>
+        <div class="finger-dot" title="검지">☝️</div>
+        <div class="finger-dot" title="중지">🖕</div>
+        <div class="finger-dot" title="약지">💍</div>
+        <div class="finger-dot" title="새끼">🤙</div>
+      </div>
+    </div>
+
+    <!-- 오른쪽: 웹캠 -->
+    <div class="panel webcam-panel">
+      <div class="panel-header">
+        <h2>🎥 따라하기</h2>
+        <div class="tracking-status" id="tracking-status">
+          <span class="status-dot"></span>
+          <span>카메라 대기</span>
+        </div>
+      </div>
+
+      <div class="webcam-wrapper">
+        <video id="webcam" autoplay muted playsinline></video>
+        <canvas id="overlay-canvas" width="640" height="480"></canvas>
+
+        <div class="webcam-placeholder" id="webcam-placeholder">
+          <div class="placeholder-icon">📷</div>
+          <p>카메라를 허용해주세요</p>
+        </div>
+      </div>
+
+      <div class="panel-footer">
+        <button class="btn btn-primary" id="start-camera-btn">
+          📷 카메라 시작
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /panels-row -->
+
+  <!-- ── 상태 메시지 ───────────────────────────────────────────────────── -->
+  <div class="status-bar">
+    <span id="status-message">아래에서 배울 수화를 선택하세요 👇</span>
+  </div>
+
+  <!-- ── 수화 선택기 ───────────────────────────────────────────────────── -->
+  <div class="sign-selector">
+    <div class="category-tabs">
+      <button class="tab-btn active" data-category="numbers">🔢 숫자</button>
+      <button class="tab-btn" data-category="greetings">👋 인사</button>
+      <button class="tab-btn" data-category="expressions">💬 표현</button>
+    </div>
+    <div class="sign-grid" id="sign-grid">
+      <!-- JS로 채워짐 -->
+    </div>
+  </div>
+
+</main><!-- /app-main -->
+
+<!-- ── 성공 모달 ───────────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="success-modal" style="display:none">
+  <div class="modal">
+    <div class="modal-icon">🎉</div>
+    <h2>완벽해요!</h2>
+    <p class="modal-sign" id="modal-sign-name"></p>
+    <p class="modal-score">최고 점수: <span id="modal-best-score">0</span>점</p>
+    <div class="modal-btns">
+      <button class="btn btn-secondary" id="modal-retry-btn">🔄 다시 하기</button>
+      <button class="btn btn-primary"   id="modal-next-btn">다음 수화 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 라이브러리 CDN ──────────────────────────────────────────────────── -->
+<!-- Three.js r134 (글로벌 THREE 네임스페이스) -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.134.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
+
+<!-- MediaPipe Hands -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"  crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"                crossorigin="anonymous"></script>
+
+<!-- 앱 스크립트 -->
+<script src="/static/js/signs-data.js"></script>
+<script src="/static/js/gesture-scorer.js"></script>
+<script src="/static/js/hand-tracker.js"></script>
+<script src="/static/js/hand-renderer.js"></script>
+<script src="/static/js/app.js"></script>
+
+</body>
+</html>
