@@ -1,21 +1,255 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.x/dist/tf.min.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> 수화 공부!</title>
-  <link rel="stylesheet" href="/static/css/style.css">
+  <title>수화 공부!</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/static/css/style.css?v=2">
+  <style>
+    /* ── 카테고리 탭 스크롤 ──────────────────────────────────────────── */
+    .category-tabs {
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 6px;
+      padding-bottom: 6px;
+      scrollbar-width: thin;
+      scrollbar-color: #3d4560 transparent;
+    }
+    .category-tabs::-webkit-scrollbar { height: 4px; }
+    .category-tabs::-webkit-scrollbar-thumb { background: #3d4560; border-radius: 2px; }
+    .category-tabs .tab-btn { white-space: nowrap; flex-shrink: 0; }
+  </style>
+  <style>
+    /* ── 수어 검색 영역 ───────────────────────────────────────────── */
+    .sign-search-bar {
+      background: linear-gradient(135deg, #1a1540 0%, #0f1929 100%);
+      border: 1px solid rgba(108,99,255,0.4);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .sign-search-label {
+      font-size: 0.78rem;
+      color: #8892a4;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sign-search-badge {
+      background: linear-gradient(90deg, #6c63ff, #00d2ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+
+    .sign-search-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    #sign-search-input {
+      flex: 1;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid #252d42;
+      border-radius: 8px;
+      padding: 9px 14px;
+      color: #e2e8f0;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    #sign-search-input:focus {
+      border-color: #6c63ff;
+    }
+
+    #sign-search-input::placeholder {
+      color: #4a5568;
+    }
+
+    #sign-search-btn {
+      background: linear-gradient(135deg, #6c63ff, #00d2ff);
+      border: none;
+      border-radius: 8px;
+      padding: 9px 18px;
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: filter 0.2s;
+    }
+
+    #sign-search-btn:hover { filter: brightness(1.15); }
+    #sign-search-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .sign-search-status {
+      font-size: 0.8rem;
+      min-height: 18px;
+      transition: color 0.2s;
+    }
+    .sign-search-status-loading { color: #00d2ff; }
+    .sign-search-status-success { color: #22c55e; }
+    .sign-search-status-error   { color: #ef4444; }
+
+    /* ── 동작 순서 ─────────────────────────────────────────────────── */
+    #sign-search-steps {
+      display: none;
+      background: rgba(108,99,255,0.08);
+      border: 1px solid rgba(108,99,255,0.2);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-top: 4px;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 4px 0;
+      font-size: 0.82rem;
+      color: #e2e8f0;
+    }
+
+    .step-num {
+      background: #6c63ff;
+      color: #fff;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── 검색 결과 정보 표시 ───────────────────────────────────────── */
+    .sign-search-source-label {
+      font-size: 0.72rem;
+      color: #00d2ff;
+      margin-bottom: 6px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .sign-search-curl-section {
+      margin-bottom: 8px;
+    }
+
+    .fingerspell-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 8px 0;
+    }
+    .fingerspell-nav button {
+      background: rgba(108,99,255,0.2);
+      border: 1px solid rgba(108,99,255,0.4);
+      color: #fff;
+      border-radius: 6px;
+      padding: 4px 14px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .fingerspell-nav button:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+    .fingerspell-nav button:not(:disabled):hover {
+      background: rgba(108,99,255,0.5);
+    }
+    .seq-label {
+      font-size: 1.1rem;
+      font-weight: bold;
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .sign-search-steps-section {
+      border-top: 1px solid rgba(108,99,255,0.2);
+      padding-top: 8px;
+    }
+
+    .curl-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 2px 0;
+      font-size: 0.78rem;
+    }
+
+    .curl-name {
+      width: 28px;
+      color: #8892a4;
+      flex-shrink: 0;
+    }
+
+    .curl-bar {
+      flex: 1;
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .curl-fill {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, #6c63ff, #00d2ff);
+      border-radius: 3px;
+      transition: width 0.4s ease;
+    }
+
+    .curl-row span:last-child {
+      width: 28px;
+      text-align: right;
+      color: #8892a4;
+      font-size: 0.72rem;
+    }
+  </style>
 </head>
 <body>
 
 <!-- ── 헤더 ───────────────────────────────────────────────────────────── -->
 <header class="app-header">
+  <button class="admin-toggle" id="admin-toggle" type="button">관리자</button>
   <h1> 수화 공부!</h1>
-  <span class="header-sub"> AI 수화 교육 서비스</span>
+  <span class="header-sub">AI 수화 교육 서비스</span>
 </header>
 
 <!-- ── 메인 ───────────────────────────────────────────────────────────── -->
 <main class="app-main">
+
+  <!-- ── 수어 검색창 ───────────────────────────────────────────────────── -->
+  <div class="sign-search-bar">
+    <div class="sign-search-label">
+      ✨ <span class="sign-search-badge">수어 검색</span>
+      — 배우고 싶은 단어나 문장을 입력하세요
+    </div>
+    <div class="sign-search-row">
+      <input type="text" id="sign-search-input"
+             placeholder="예: 안녕하세요, 사랑해, 감사합니다, 숫자 7..." />
+      <button id="sign-search-btn">🔍 검색</button>
+    </div>
+    <div class="sign-search-status" id="sign-search-status"></div>
+  </div>
+
+  <!-- ── 동작 순서 ─────────────────────────────────────────────────────── -->
+  <div id="sign-search-steps"></div>
 
   <!-- ── 패널 행: 시범 | 점수 | 웹캠 ──────────────────────────────────── -->
   <div class="panels-row">
@@ -32,10 +266,22 @@
 
       <div class="canvas-wrapper">
         <canvas id="three-canvas"></canvas>
+        <video id="aihub-video" muted loop playsinline
+               style="display:none;width:100%;height:100%;object-fit:contain;background:#000;border-radius:8px"></video>
+        <div id="aihub-video-error"
+             style="display:none;position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:#8892a4;font-size:0.85rem">
+          <span style="font-size:2rem">📹</span>
+          <span>영상을 불러올 수 없습니다</span>
+        </div>
+      </div>
+
+      <div class="demo-stage-bar" id="demo-stage-bar" style="display:none">
+        <span class="demo-stage-label" id="demo-stage-label">단계 1/5</span>
+        <div class="demo-stage-dots" id="demo-stage-dots"></div>
       </div>
 
       <div class="sign-description" id="sign-description">
-        아래 목록에서 배울 수화를 선택하세요
+        위 검색창에서 단어를 검색하거나 아래 목록에서 선택하세요
       </div>
     </div>
 
@@ -58,13 +304,12 @@
 
       <div class="score-label" id="score-label">대기중</div>
 
-      <!-- 손가락 인디케이터 -->
       <div class="finger-dots">
-        <div class="finger-dot" title="엄지">👍</div>
-        <div class="finger-dot" title="검지">☝️</div>
-        <div class="finger-dot" title="중지">🖕</div>
-        <div class="finger-dot" title="약지">💍</div>
-        <div class="finger-dot" title="새끼">🤙</div>
+        <div class="finger-dot" title="엄지"></div>
+        <div class="finger-dot" title="검지"></div>
+        <div class="finger-dot" title="중지"></div>
+        <div class="finger-dot" title="약지"></div>
+        <div class="finger-dot" title="새끼"></div>
       </div>
     </div>
 
@@ -81,7 +326,6 @@
       <div class="webcam-wrapper">
         <video id="webcam" autoplay muted playsinline></video>
         <canvas id="overlay-canvas" width="640" height="480"></canvas>
-
         <div class="webcam-placeholder" id="webcam-placeholder">
           <div class="placeholder-icon">📷</div>
           <p>카메라를 허용해주세요</p>
@@ -99,22 +343,42 @@
 
   <!-- ── 상태 메시지 ───────────────────────────────────────────────────── -->
   <div class="status-bar">
-    <span id="status-message">아래에서 배울 수화를 선택하세요 👇</span>
+    <span id="status-message">위 검색창에서 단어를 검색하거나 아래 목록에서 수화를 선택하세요 👇</span>
   </div>
 
   <!-- ── 수화 선택기 ───────────────────────────────────────────────────── -->
   <div class="sign-selector">
-    <div class="category-tabs">
+    <div class="category-tabs" id="category-tabs">
       <button class="tab-btn active" data-category="numbers">🔢 숫자</button>
       <button class="tab-btn" data-category="greetings">👋 인사</button>
-      <button class="tab-btn" data-category="expressions">💬 표현</button>
+      <button class="tab-btn" data-category="emotions">😊 감정</button>
+      <button class="tab-btn" data-category="family">👨‍👩‍👧 가족</button>
+      <button class="tab-btn" data-category="food">🍚 음식</button>
+      <button class="tab-btn" data-category="body">🧍 신체</button>
+      <button class="tab-btn" data-category="health">🏥 건강</button>
+      <button class="tab-btn" data-category="time">🕐 시간</button>
+      <button class="tab-btn" data-category="place">📍 장소</button>
+      <button class="tab-btn" data-category="transport">🚌 교통</button>
+      <button class="tab-btn" data-category="jobs">💼 직업</button>
+      <button class="tab-btn" data-category="school">📚 학교</button>
+      <button class="tab-btn" data-category="weather">🌤️ 날씨</button>
+      <button class="tab-btn" data-category="colors">🎨 색깔</button>
+      <button class="tab-btn" data-category="sports">⚽ 스포츠</button>
+      <button class="tab-btn" data-category="basic">💬 기초표현</button>
+      <button class="tab-btn" data-category="daily">🚶 일상</button>
+      <button class="tab-btn" data-category="character">✨ 성격</button>
+      <button class="tab-btn" data-category="society">👥 사회</button>
+      <button class="tab-btn" data-category="life">🌟 인생</button>
+      <button class="tab-btn" data-category="jamo">🤟 자음/모음</button>
     </div>
-    <div class="sign-grid" id="sign-grid">
-      <!-- JS로 채워짐 -->
+    <div id="jamo-subtabs" class="jamo-subtabs" style="display:none">
+      <button class="subtab-btn active" data-jamo-type="consonants">자음</button>
+      <button class="subtab-btn" data-jamo-type="vowels">모음</button>
     </div>
+    <div class="sign-grid" id="sign-grid"></div>
   </div>
 
-</main><!-- /app-main -->
+</main>
 
 <!-- ── 성공 모달 ───────────────────────────────────────────────────────── -->
 <div class="modal-overlay" id="success-modal" style="display:none">
@@ -131,21 +395,48 @@
 </div>
 
 <!-- ── 라이브러리 CDN ──────────────────────────────────────────────────── -->
-<!-- Three.js r134 (글로벌 THREE 네임스페이스) -->
+<div class="admin-drawer" id="admin-drawer" aria-hidden="true">
+  <div class="admin-panel">
+    <div class="admin-panel-head">
+      <div>
+        <h2>관리자 모드</h2>
+        <p>현재 카메라 손 자세를 캡처해서 `signs-data.js`에 적용할 데이터로 추출합니다.</p>
+      </div>
+      <button class="admin-close" id="admin-close" type="button">x</button>
+    </div>
+
+    <div class="admin-current">
+      <span>선택된 수어</span>
+      <strong id="admin-current-sign">없음</strong>
+    </div>
+
+    <div class="admin-actions">
+      <button class="btn btn-primary" id="admin-capture-btn" type="button">카메라 자세 캡처</button>
+      <button class="btn btn-secondary" id="admin-preview-btn" type="button">캡처 자세 미리보기</button>
+      <button class="btn btn-secondary" id="admin-copy-btn" type="button">추출 코드 복사</button>
+    </div>
+
+    <div class="admin-status" id="admin-status">카메라를 켠 뒤 수정할 수어를 고르고, 올바른 손 자세를 화면에 보여주세요.</div>
+
+    <label class="admin-label" for="admin-export">추출 코드</label>
+    <textarea id="admin-export" class="admin-export" spellcheck="false" placeholder="캡처한 자세 데이터가 여기에 표시됩니다."></textarea>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
-
-<!-- MediaPipe Hands -->
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"  crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"                crossorigin="anonymous"></script>
 
 <!-- 앱 스크립트 -->
-<script src="/static/js/signs-data.js"></script>
-<script src="/static/js/gesture-scorer.js"></script>
-<script src="/static/js/hand-tracker.js"></script>
-<script src="/static/js/hand-renderer.js"></script>
-<script src="/static/js/app.js"></script>
+<script src="/static/js/signs-data.js?v=9"></script>
+<script src="/static/js/gesture-scorer.js?v=6"></script>
+<script src="/static/js/hand-trakcer.js?v=6"></script>
+<script src="/static/js/hand-renderer.js?v=11"></script>
+<script src="/static/js/sign-search.js?v=1"></script>
+<script src="/static/js/app.js?v=14"></script>
+<script src="/static/js/admin-mode.js?v=1"></script>
 
 </body>
 </html>

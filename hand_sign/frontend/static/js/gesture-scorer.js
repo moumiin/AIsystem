@@ -39,9 +39,9 @@ function normalizeLandmarks(mpLandmarks, isRightHand) {
   // 웹캠은 셀피(좌우반전) 이미지이므로 오른손 엄지가 이미지 왼쪽에 위치
   // → 오른손은 x를 반전해야 기준 포즈(엄지 = +x)와 일치
   return shifted.map(([x, y, z]) => [
-    (isRightHand ? -x : x) / scale, //  x: 오른손 엄지 = +x (셀피 보정)
-    -y / scale,                      //  y: 위 = +y
-    -z / scale,                      //  z: 카메라 방향 = +z
+    (isRightHand ? -x : x) / scale,
+    -y / scale,
+    -z / scale,
   ]);
 }
 
@@ -70,15 +70,15 @@ function computeScore(userNorm, refPose) {
   for (let i = 0; i < 21; i++) {
     const [ux, uy, uz] = userNorm[i];
     const [rx, ry, rz] = refPose[i];
-    // Z축(깊이)은 MediaPipe에서 노이즈가 많으므로 가중치 0.3 적용
-    const dist = Math.sqrt((ux - rx) ** 2 + (uy - ry) ** 2 + ((uz - rz) * 0.3) ** 2);
+    // Z축(깊이)은 MediaPipe에서 노이즈가 많으므로 가중치 0.15 적용
+    const dist = Math.sqrt((ux - rx) ** 2 + (uy - ry) ** 2 + ((uz - rz) * 0.15) ** 2);
     totalErr += dist * LM_WEIGHTS[i];
     totalW   += LM_WEIGHTS[i];
   }
 
   const avgErr = totalErr / totalW;
-  // 이차 곡선: 작은 오차는 고점수 유지, 큰 오차에서 빠르게 감점
-  // avgErr 0 → 100점, 0.15 → 91점, 0.3 → 64점, 0.5 → 0점
+  // 이차 곡선: avgErr 0 → 100점, 0.2 → 93점, 0.4 → 74점, 0.7 → 0점
+  // 허용 범위를 0.5→0.7로 완화 (손 방향 차이, 카메라 노이즈 흡수)
   const ratio = Math.min(1, avgErr / 0.7);
   return Math.round(Math.max(0, (1 - ratio * ratio) * 100));
 }
@@ -98,10 +98,9 @@ function computePerFingerScores(userNorm, refPose) {
     for (const i of indices) {
       const [ux, uy, uz] = userNorm[i];
       const [rx, ry, rz] = refPose[i];
-      err += Math.sqrt((ux - rx) ** 2 + (uy - ry) ** 2 + ((uz - rz) * 0.3) ** 2);
+      err += Math.sqrt((ux - rx) ** 2 + (uy - ry) ** 2 + (uz - rz) ** 2);
     }
     const avgErr = err / indices.length;
-    // 손가락별 판정도 완화 (0.8 기준으로 확장, 높을수록 완화)
     result[finger] = Math.max(0, Math.min(1, 1 - avgErr / 0.8));
   }
   return result;

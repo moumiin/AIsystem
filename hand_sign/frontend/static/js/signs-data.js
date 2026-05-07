@@ -1,68 +1,31 @@
 /**
- * 수화 기준 포즈 데이터
+ * 수화 기준 포즈 / AI Hub 단어 매핑 데이터
  *
- * 좌표계: Three.js 공간 (정규화)
- *   - 손목(wrist) = 원점 (0,0,0)
- *   - 중지 MCP 까지의 거리 = 1.0 (스케일 기준)
- *   - x+: 오른쪽 (엄지 방향, 오른손 기준)
- *   - y+: 위 (손가락 끝 방향)
- *   - z+: 뷰어 방향
- *
- * MediaPipe 21개 랜드마크 순서:
- *   0:WRIST  1-4:THUMB  5-8:INDEX  9-12:MIDDLE  13-16:RING  17-20:PINKY
+ * aihubWord 필드가 있는 항목은 선택 시 자동으로 AI Hub에서 데이터를 가져옵니다.
+ * pose 필드가 있는 항목은 기존 방식(정적 포즈)으로 동작합니다.
  */
 
-// ─── 기본 포즈: 손 펼침 (Open Palm) ───────────────────────────────────────
+// ── 공통 포즈 (fallback용) ─────────────────────────────────────────────────
 const OPEN_PALM = [
-  [ 0.00,  0.00,  0.00], // 0  WRIST
-  [ 0.22,  0.38,  0.02], // 1  THUMB_CMC
-  [ 0.32,  0.58,  0.03], // 2  THUMB_MCP
-  [ 0.39,  0.74,  0.05], // 3  THUMB_IP
-  [ 0.43,  0.86,  0.06], // 4  THUMB_TIP
-  [ 0.15,  0.95,  0.00], // 5  INDEX_MCP
-  [ 0.15,  1.38,  0.02], // 6  INDEX_PIP
-  [ 0.15,  1.65,  0.04], // 7  INDEX_DIP
-  [ 0.15,  1.82,  0.05], // 8  INDEX_TIP
-  [ 0.00,  1.00,  0.00], // 9  MIDDLE_MCP
-  [ 0.00,  1.48,  0.02], // 10 MIDDLE_PIP
-  [ 0.00,  1.78,  0.04], // 11 MIDDLE_DIP
-  [ 0.00,  1.97,  0.05], // 12 MIDDLE_TIP
-  [-0.14,  0.95,  0.00], // 13 RING_MCP
-  [-0.14,  1.38,  0.02], // 14 RING_PIP
-  [-0.14,  1.65,  0.04], // 15 RING_DIP
-  [-0.14,  1.82,  0.05], // 16 RING_TIP
-  [-0.25,  0.86,  0.00], // 17 PINKY_MCP
-  [-0.25,  1.20,  0.01], // 18 PINKY_PIP
-  [-0.25,  1.40,  0.03], // 19 PINKY_DIP
-  [-0.25,  1.53,  0.04], // 20 PINKY_TIP
+  [ 0.00,  0.00,  0.00], [ 0.22,  0.38,  0.02], [ 0.32,  0.58,  0.03],
+  [ 0.39,  0.74,  0.05], [ 0.43,  0.86,  0.06], [ 0.15,  0.95,  0.00],
+  [ 0.15,  1.38,  0.02], [ 0.15,  1.65,  0.04], [ 0.15,  1.82,  0.05],
+  [ 0.00,  1.00,  0.00], [ 0.00,  1.48,  0.02], [ 0.00,  1.78,  0.04],
+  [ 0.00,  1.97,  0.05], [-0.14,  0.95,  0.00], [-0.14,  1.38,  0.02],
+  [-0.14,  1.65,  0.04], [-0.14,  1.82,  0.05], [-0.25,  0.86,  0.00],
+  [-0.25,  1.20,  0.01], [-0.25,  1.40,  0.03], [-0.25,  1.53,  0.04],
 ];
 
-// ─── 기본 포즈: 주먹 (Closed Fist) ────────────────────────────────────────
 const CLOSED_FIST = [
-  [ 0.00,  0.00,  0.00], // 0  WRIST
-  [ 0.22,  0.38,  0.02], // 1  THUMB_CMC
-  [ 0.30,  0.53,  0.08], // 2  THUMB_MCP
-  [ 0.22,  0.62,  0.16], // 3  THUMB_IP
-  [ 0.10,  0.68,  0.18], // 4  THUMB_TIP
-  [ 0.15,  0.95,  0.00], // 5  INDEX_MCP
-  [ 0.23,  1.07,  0.20], // 6  INDEX_PIP
-  [ 0.17,  0.98,  0.33], // 7  INDEX_DIP
-  [ 0.06,  0.89,  0.36], // 8  INDEX_TIP
-  [ 0.00,  1.00,  0.00], // 9  MIDDLE_MCP
-  [ 0.06,  1.12,  0.22], // 10 MIDDLE_PIP
-  [ 0.01,  1.02,  0.35], // 11 MIDDLE_DIP
-  [-0.07,  0.92,  0.38], // 12 MIDDLE_TIP
-  [-0.14,  0.95,  0.00], // 13 RING_MCP
-  [-0.10,  1.07,  0.20], // 14 RING_PIP
-  [-0.09,  0.97,  0.33], // 15 RING_DIP
-  [-0.04,  0.88,  0.36], // 16 RING_TIP
-  [-0.25,  0.86,  0.00], // 17 PINKY_MCP
-  [-0.24,  0.95,  0.15], // 18 PINKY_PIP
-  [-0.22,  0.88,  0.26], // 19 PINKY_DIP
-  [-0.18,  0.82,  0.28], // 20 PINKY_TIP
+  [ 0.00,  0.00,  0.00], [ 0.22,  0.38,  0.02], [ 0.30,  0.53,  0.08],
+  [ 0.22,  0.62,  0.16], [ 0.10,  0.68,  0.18], [ 0.15,  0.95,  0.00],
+  [ 0.23,  1.07,  0.20], [ 0.17,  0.98,  0.33], [ 0.06,  0.89,  0.36],
+  [ 0.00,  1.00,  0.00], [ 0.06,  1.12,  0.22], [ 0.01,  1.02,  0.35],
+  [-0.07,  0.92,  0.38], [-0.14,  0.95,  0.00], [-0.10,  1.07,  0.20],
+  [-0.09,  0.97,  0.33], [-0.04,  0.88,  0.36], [-0.25,  0.86,  0.00],
+  [-0.24,  0.95,  0.15], [-0.22,  0.88,  0.26], [-0.18,  0.82,  0.28],
 ];
 
-// ─── 손가락 인덱스 맵 ────────────────────────────────────────────────────
 const FINGER_INDICES = {
   thumb:  [1, 2, 3, 4],
   index:  [5, 6, 7, 8],
@@ -71,17 +34,11 @@ const FINGER_INDICES = {
   pinky:  [17, 18, 19, 20],
 };
 
-/**
- * 손가락 굴곡값으로 포즈 생성
- * @param {Object} curls - {thumb, index, middle, ring, pinky} 각 0(펼침)~1(접힘)
- * @returns {Array} 21개 랜드마크 배열
- */
 function createSign(curls) {
   const result = OPEN_PALM.map(([x, y, z]) => [x, y, z]);
   for (const [finger, curl] of Object.entries(curls)) {
     for (const idx of FINGER_INDICES[finger]) {
-      const a = OPEN_PALM[idx];
-      const b = CLOSED_FIST[idx];
+      const a = OPEN_PALM[idx], b = CLOSED_FIST[idx];
       result[idx] = [
         a[0] + (b[0] - a[0]) * curl,
         a[1] + (b[1] - a[1]) * curl,
@@ -92,77 +49,383 @@ function createSign(curls) {
   return result;
 }
 
-// ─── 수화 목록 ─────────────────────────────────────────────────────────────
+// ── 카테고리 메타데이터 ─────────────────────────────────────────────────────
+const CATEGORY_META = {
+  numbers:   { label: '숫자',    emoji: '🔢' },
+  greetings: { label: '인사',    emoji: '👋' },
+  emotions:  { label: '감정',    emoji: '😊' },
+  family:    { label: '가족',    emoji: '👨‍👩‍👧' },
+  food:      { label: '음식',    emoji: '🍚' },
+  body:      { label: '신체',    emoji: '🧍' },
+  health:    { label: '건강',    emoji: '🏥' },
+  time:      { label: '시간',    emoji: '🕐' },
+  place:     { label: '장소',    emoji: '📍' },
+  transport: { label: '교통',    emoji: '🚌' },
+  jobs:      { label: '직업',    emoji: '💼' },
+  school:    { label: '학교',    emoji: '📚' },
+  weather:   { label: '날씨',    emoji: '🌤️' },
+  colors:    { label: '색깔',    emoji: '🎨' },
+  sports:    { label: '스포츠',  emoji: '⚽' },
+  basic:     { label: '기초표현', emoji: '💬' },
+  daily:     { label: '일상',     emoji: '🚶' },
+  character: { label: '성격',     emoji: '✨' },
+  society:   { label: '사회',     emoji: '👥' },
+  life:      { label: '인생',     emoji: '🌟' },
+  jamo:      { label: '자음/모음', emoji: '🤟' },
+};
+
+// ── 수화 목록 ──────────────────────────────────────────────────────────────
 const SIGNS = [
-  // ── 숫자 ──────────────────────────────────────────────────────────────
-  {
-    id: 'num1', name: '숫자 1', category: 'numbers', emoji: '☝️',
-    description: '검지만 곧게 펴고 나머지 손가락은 접으세요',
-    hint: '검지 하나만 위로 세워요',
-    pose: createSign({ thumb: 0.5, index: 0.0, middle: 1.0, ring: 1.0, pinky: 1.0 }),
-  },
-  {
-    id: 'num2', name: '숫자 2', category: 'numbers', emoji: '✌️',
-    description: '검지와 중지를 펴고 V자 모양을 만드세요',
-    hint: '검지, 중지 두 손가락을 위로 펴요',
-    pose: createSign({ thumb: 0.5, index: 0.0, middle: 0.0, ring: 1.0, pinky: 1.0 }),
-  },
-  {
-    id: 'num3', name: '숫자 3', category: 'numbers', emoji: '🤟',
-    description: '검지, 중지, 약지 세 손가락을 펴세요',
-    hint: '세 손가락을 나란히 펴요',
-    pose: createSign({ thumb: 0.5, index: 0.0, middle: 0.0, ring: 0.0, pinky: 1.0 }),
-  },
-  {
-    id: 'num4', name: '숫자 4', category: 'numbers', emoji: '4️⃣',
-    description: '엄지를 제외한 네 손가락을 모두 펴세요',
-    hint: '엄지만 접고 나머지 네 손가락을 펴요',
-    pose: createSign({ thumb: 1.0, index: 0.0, middle: 0.0, ring: 0.0, pinky: 0.0 }),
-  },
-  {
-    id: 'num5', name: '숫자 5', category: 'numbers', emoji: '🖐️',
-    description: '다섯 손가락을 모두 활짝 펴세요',
-    hint: '손바닥을 완전히 펴서 보여주세요',
-    pose: createSign({ thumb: 0.0, index: 0.0, middle: 0.0, ring: 0.0, pinky: 0.0 }),
-  },
 
-  // ── 인사 ──────────────────────────────────────────────────────────────
-  {
-    id: 'hello', name: '안녕하세요', category: 'greetings', emoji: '👋',
-    description: '손바닥을 앞으로 향하고 손을 펼쳐 가볍게 흔드세요',
-    hint: '손바닥을 카메라 쪽으로 향하고 손을 펼쳐요',
-    pose: createSign({ thumb: 0.0, index: 0.0, middle: 0.0, ring: 0.0, pinky: 0.0 }),
-  },
-  {
-    id: 'thanks', name: '감사합니다', category: 'greetings', emoji: '🙏',
-    description: '손을 살짝 구부린 채 가슴 앞에 모으세요',
-    hint: '모든 손가락을 살짝 구부려요',
-    pose: createSign({ thumb: 0.2, index: 0.3, middle: 0.3, ring: 0.3, pinky: 0.3 }),
-  },
-  {
-    id: 'sorry', name: '미안합니다', category: 'greetings', emoji: '😔',
-    description: '가볍게 주먹을 쥐고 가슴 앞에서 원을 그리세요',
-    hint: '손가락을 모두 가볍게 접어 주먹을 만들어요',
-    pose: createSign({ thumb: 0.4, index: 0.9, middle: 0.9, ring: 0.9, pinky: 0.9 }),
-  },
+  // ── 숫자 ─────────────────────────────────────────────────────────────
+  { id:'num1',  category:'numbers', name:'1',    emoji:'1️⃣', aihubWord:'1'  },
+  { id:'num2',  category:'numbers', name:'2',    emoji:'2️⃣', aihubWord:'2'  },
+  { id:'num3',  category:'numbers', name:'3',    emoji:'3️⃣', aihubWord:'3'  },
+  { id:'num4',  category:'numbers', name:'4',    emoji:'4️⃣', aihubWord:'4'  },
+  { id:'num5',  category:'numbers', name:'5',    emoji:'5️⃣', aihubWord:'5'  },
+  { id:'num6',  category:'numbers', name:'6',    emoji:'6️⃣', aihubWord:'6'  },
+  { id:'num7',  category:'numbers', name:'7',    emoji:'7️⃣', aihubWord:'7'  },
+  { id:'num8',  category:'numbers', name:'8',    emoji:'8️⃣', aihubWord:'8'  },
+  { id:'num9',  category:'numbers', name:'9',    emoji:'9️⃣', aihubWord:'9'  },
+  { id:'num10', category:'numbers', name:'10',   emoji:'🔟', aihubWord:'10' },
+  { id:'num100',category:'numbers', name:'백',   emoji:'💯', aihubWord:'백' },
+  { id:'num1k', category:'numbers', name:'천',   emoji:'🔢', aihubWord:'천' },
+  { id:'num10k',category:'numbers', name:'만',   emoji:'🔢', aihubWord:'만' },
+  { id:'num5k', category:'numbers', name:'오천원', emoji:'💵', aihubWord:'오천원' },
+  { id:'num10kw',category:'numbers',name:'만원', emoji:'💴', aihubWord:'만원' },
 
-  // ── 표현 ──────────────────────────────────────────────────────────────
-  {
-    id: 'ily', name: '사랑해요', category: 'expressions', emoji: '🤟',
-    description: '엄지, 검지, 새끼손가락을 펴세요 (ILY 사인)',
-    hint: '엄지·검지·새끼를 펴고 중지·약지는 접어요',
-    pose: createSign({ thumb: 0.0, index: 0.0, middle: 1.0, ring: 1.0, pinky: 0.0 }),
-  },
-  {
-    id: 'fighting', name: '파이팅!', category: 'expressions', emoji: '✊',
-    description: '주먹을 꽉 쥐고 힘차게 올려주세요',
-    hint: '다섯 손가락을 모두 꽉 접어서 주먹을 만들어요',
-    pose: createSign({ thumb: 0.5, index: 1.0, middle: 1.0, ring: 1.0, pinky: 1.0 }),
-  },
-  {
-    id: 'ok', name: '오케이', category: 'expressions', emoji: '👌',
-    description: '검지만 살짝 구부리고 나머지는 접으세요',
-    hint: '검지는 살짝, 나머지는 완전히 접어요',
-    pose: createSign({ thumb: 0.3, index: 0.6, middle: 1.0, ring: 1.0, pinky: 1.0 }),
-  },
+  // ── 인사 ─────────────────────────────────────────────────────────────
+  { id:'gr1', category:'greetings', name:'안녕하세요', emoji:'👋', aihubWord:'안녕하세요' },
+  { id:'gr2', category:'greetings', name:'감사합니다', emoji:'🙏', aihubWord:'감사합니다' },
+  { id:'gr3', category:'greetings', name:'미안합니다', emoji:'😔', aihubWord:'미안합니다' },
+  { id:'gr4', category:'greetings', name:'죄송합니다', emoji:'🙇', aihubWord:'죄송'       },
+  { id:'gr5', category:'greetings', name:'반갑습니다', emoji:'🤝', aihubWord:'반갑다'     },
+  { id:'gr6', category:'greetings', name:'괜찮아요',  emoji:'😊', aihubWord:'괜찮다'     },
+  { id:'gr7', category:'greetings', name:'주세요',    emoji:'🙋', aihubWord:'주세요'     },
+  { id:'gr8', category:'greetings', name:'말하다',    emoji:'💬', aihubWord:'말하다'     },
+  { id:'gr9', category:'greetings', name:'감사',      emoji:'💛', aihubWord:'감사'       },
+
+  // ── 감정/표현 ─────────────────────────────────────────────────────────
+  { id:'em1',  category:'emotions', name:'행복',    emoji:'😄', aihubWord:'행복'     },
+  { id:'em2',  category:'emotions', name:'슬프다',  emoji:'😢', aihubWord:'슬프다'   },
+  { id:'em3',  category:'emotions', name:'화나다',  emoji:'😠', aihubWord:'화나다'   },
+  { id:'em4',  category:'emotions', name:'걱정',    emoji:'😟', aihubWord:'걱정'     },
+  { id:'em5',  category:'emotions', name:'무섭다',  emoji:'😨', aihubWord:'무섭다'   },
+  { id:'em6',  category:'emotions', name:'우울',    emoji:'😞', aihubWord:'우울'     },
+  { id:'em7',  category:'emotions', name:'감동',    emoji:'🥺', aihubWord:'감동'     },
+  { id:'em8',  category:'emotions', name:'실망',    emoji:'😞', aihubWord:'실망'     },
+  { id:'em9',  category:'emotions', name:'짜증',    emoji:'😤', aihubWord:'짜증'     },
+  { id:'em10', category:'emotions', name:'부럽다',  emoji:'😍', aihubWord:'부럽다'   },
+  { id:'em11', category:'emotions', name:'창피하다',emoji:'😳', aihubWord:'창피하다' },
+  { id:'em12', category:'emotions', name:'즐겁다',  emoji:'🥳', aihubWord:'즐겁다'   },
+  { id:'em13', category:'emotions', name:'기대',    emoji:'✨', aihubWord:'기대'     },
+  { id:'em14', category:'emotions', name:'귀엽다',  emoji:'🥰', aihubWord:'귀엽다'   },
+  { id:'em15', category:'emotions', name:'밉다',    emoji:'😤', aihubWord:'밉다'     },
+  { id:'em16', category:'emotions', name:'바쁘다',  emoji:'😰', aihubWord:'바쁘다'   },
+  { id:'em17', category:'emotions', name:'졸리다',  emoji:'😴', aihubWord:'졸리다'   },
+  { id:'em18', category:'emotions', name:'피곤',    emoji:'😫', aihubWord:'피곤'     },
+  { id:'em19', category:'emotions', name:'힘들다',  emoji:'😩', aihubWord:'힘들다'   },
+  { id:'em20', category:'emotions', name:'지겹다',  emoji:'🙄', aihubWord:'지겹다'   },
+  { id:'em21', category:'emotions', name:'조용하다',emoji:'🤫', aihubWord:'조용하다' },
+  { id:'em22', category:'emotions', name:'난감하다',emoji:'😬', aihubWord:'난감하다' },
+  { id:'em23', category:'emotions', name:'놀라다',  emoji:'😲', aihubWord:'놀라다'   },
+  { id:'em24', category:'emotions', name:'망설이다',emoji:'🤔', aihubWord:'망설이다' },
+  { id:'em25', category:'emotions', name:'후회',    emoji:'😔', aihubWord:'후회'     },
+  { id:'em26', category:'emotions', name:'상처',    emoji:'💔', aihubWord:'상처'     },
+  { id:'em27', category:'emotions', name:'기억',    emoji:'💭', aihubWord:'기억'     },
+  { id:'em28', category:'emotions', name:'꿈',      emoji:'🌙', aihubWord:'꿈'       },
+  { id:'em29', category:'emotions', name:'희망',    emoji:'🌟', aihubWord:'희망'     },
+  { id:'em30', category:'emotions', name:'충격',    emoji:'😱', aihubWord:'충격'     },
+  { id:'em31', category:'emotions', name:'착각',    emoji:'🤯', aihubWord:'착각'     },
+  { id:'em32', category:'emotions', name:'소외감',  emoji:'😶', aihubWord:'소외감'   },
+  { id:'em33', category:'emotions', name:'질투',    emoji:'😒', aihubWord:'질투'     },
+  { id:'em34', category:'emotions', name:'매력',    emoji:'✨', aihubWord:'매력'     },
+  { id:'em35', category:'emotions', name:'변덕',    emoji:'🌀', aihubWord:'변덕'     },
+  { id:'em36', category:'emotions', name:'갈등',    emoji:'⚡', aihubWord:'갈등'     },
+  { id:'em37', category:'emotions', name:'안타깝다',emoji:'😟', aihubWord:'안타깝다' },
+  { id:'em38', category:'emotions', name:'예민',    emoji:'😤', aihubWord:'예민'     },
+  { id:'em39', category:'emotions', name:'게으르다',emoji:'😪', aihubWord:'게으르다' },
+  { id:'em40', category:'emotions', name:'어렵다',  emoji:'😵', aihubWord:'어렵다'   },
+  { id:'em41', category:'emotions', name:'쉽다',    emoji:'😌', aihubWord:'쉽다'     },
+  { id:'em42', category:'emotions', name:'아름답다',emoji:'😍', aihubWord:'아름답다' },
+  { id:'em43', category:'emotions', name:'부드럽다',emoji:'🌸', aihubWord:'부드럽다' },
+
+  // ── 가족 ─────────────────────────────────────────────────────────────
+  { id:'fam1',  category:'family', name:'가족',     emoji:'👨‍👩‍👧‍👦', aihubWord:'가족'   },
+  { id:'fam2',  category:'family', name:'엄마',     emoji:'👩', aihubWord:'엄마'     },
+  { id:'fam3',  category:'family', name:'남편',     emoji:'👨', aihubWord:'남편'     },
+  { id:'fam4',  category:'family', name:'아내',     emoji:'👩', aihubWord:'아내'     },
+  { id:'fam5',  category:'family', name:'딸',       emoji:'👧', aihubWord:'딸'       },
+  { id:'fam6',  category:'family', name:'남매',     emoji:'👫', aihubWord:'남매'     },
+  { id:'fam7',  category:'family', name:'할머니',   emoji:'👵', aihubWord:'할머니'   },
+  { id:'fam8',  category:'family', name:'할아버지', emoji:'👴', aihubWord:'할아버지' },
+  { id:'fam9',  category:'family', name:'형',       emoji:'👦', aihubWord:'형'       },
+  { id:'fam10', category:'family', name:'누나',     emoji:'👧', aihubWord:'누나'     },
+  { id:'fam11', category:'family', name:'오빠',     emoji:'👦', aihubWord:'오빠'     },
+  { id:'fam12', category:'family', name:'여동생',   emoji:'👧', aihubWord:'여동생'   },
+  { id:'fam13', category:'family', name:'고모',     emoji:'👩', aihubWord:'고모'     },
+  { id:'fam14', category:'family', name:'이모',     emoji:'👩', aihubWord:'이모'     },
+  { id:'fam15', category:'family', name:'조카',      emoji:'🧒', aihubWord:'조카'      },
+  { id:'fam16', category:'family', name:'부부',      emoji:'👫', aihubWord:'부부'      },
+  { id:'fam17', category:'family', name:'아기',      emoji:'👶', aihubWord:'아기'      },
+  { id:'fam18', category:'family', name:'임신',      emoji:'🤰', aihubWord:'임신'      },
+  { id:'fam19', category:'family', name:'며느리',    emoji:'👩', aihubWord:'며느리'    },
+  { id:'fam20', category:'family', name:'시어머니',  emoji:'👵', aihubWord:'시어머니'  },
+  { id:'fam21', category:'family', name:'시아버지',  emoji:'👴', aihubWord:'시아버지'  },
+  { id:'fam22', category:'family', name:'외할머니',  emoji:'👵', aihubWord:'외할머니'  },
+  { id:'fam23', category:'family', name:'외할아버지',emoji:'👴', aihubWord:'외할아버지'},
+  { id:'fam24', category:'family', name:'친모',      emoji:'👩', aihubWord:'친모'      },
+  { id:'fam25', category:'family', name:'친부',      emoji:'👨', aihubWord:'친부'      },
+  { id:'fam26', category:'family', name:'매형',      emoji:'👨', aihubWord:'매형'      },
+  { id:'fam27', category:'family', name:'신혼',      emoji:'💒', aihubWord:'신혼'      },
+  { id:'fam28', category:'family', name:'외동딸',    emoji:'👧', aihubWord:'외동딸'    },
+  { id:'fam29', category:'family', name:'외아들',    emoji:'👦', aihubWord:'외아들'    },
+
+  // ── 음식/음료 ─────────────────────────────────────────────────────────
+  { id:'food1',  category:'food', name:'밥',       emoji:'🍚', aihubWord:'밥'       },
+  { id:'food2',  category:'food', name:'라면',     emoji:'🍜', aihubWord:'라면'     },
+  { id:'food3',  category:'food', name:'된장찌개', emoji:'🍲', aihubWord:'된장찌개' },
+  { id:'food4',  category:'food', name:'비빔밥',   emoji:'🥗', aihubWord:'비빔밥'   },
+  { id:'food5',  category:'food', name:'칼국수',   emoji:'🍝', aihubWord:'칼국수'   },
+  { id:'food6',  category:'food', name:'짬뽕',     emoji:'🍜', aihubWord:'짬뽕'     },
+  { id:'food7',  category:'food', name:'떡국',     emoji:'🥣', aihubWord:'떡국'     },
+  { id:'food8',  category:'food', name:'돼지고기', emoji:'🥩', aihubWord:'돼지고기' },
+  { id:'food9',  category:'food', name:'두부',     emoji:'🟫', aihubWord:'두부'     },
+  { id:'food10', category:'food', name:'사과',     emoji:'🍎', aihubWord:'사과'     },
+  { id:'food11', category:'food', name:'딸기',     emoji:'🍓', aihubWord:'딸기'     },
+  { id:'food12', category:'food', name:'커피',     emoji:'☕', aihubWord:'커피'     },
+  { id:'food13', category:'food', name:'콜라',     emoji:'🥤', aihubWord:'콜라'     },
+  { id:'food14', category:'food', name:'소주',     emoji:'🍶', aihubWord:'소주'     },
+  { id:'food15', category:'food', name:'우유',     emoji:'🥛', aihubWord:'우유'     },
+
+  // ── 신체 ─────────────────────────────────────────────────────────────
+  { id:'body1',  category:'body', name:'몸',     emoji:'🧍', aihubWord:'몸'     },
+  { id:'body2',  category:'body', name:'머리',   emoji:'🗣️', aihubWord:'머리'   },
+  { id:'body3',  category:'body', name:'눈',     emoji:'👁️', aihubWord:'눈'     },
+  { id:'body4',  category:'body', name:'코',     emoji:'👃', aihubWord:'코'     },
+  { id:'body5',  category:'body', name:'귀',     emoji:'👂', aihubWord:'귀'     },
+  { id:'body6',  category:'body', name:'입',     emoji:'👄', aihubWord:'입'     },
+  { id:'body7',  category:'body', name:'손',     emoji:'✋', aihubWord:'손'     },
+  { id:'body8',  category:'body', name:'발가락', emoji:'🦶', aihubWord:'발가락' },
+  { id:'body9',  category:'body', name:'목',     emoji:'🦒', aihubWord:'목'     },
+  { id:'body10', category:'body', name:'배',     emoji:'🤰', aihubWord:'배'     },
+  { id:'body11', category:'body', name:'팔',     emoji:'💪', aihubWord:'팔'     },
+  { id:'body12', category:'body', name:'다리',   emoji:'🦵', aihubWord:'다리'   },
+  { id:'body13', category:'body', name:'혀',     emoji:'👅', aihubWord:'혀'     },
+  { id:'body14', category:'body', name:'이마',   emoji:'🧠', aihubWord:'이마'   },
+  { id:'body15', category:'body', name:'턱',     emoji:'🦷', aihubWord:'턱'     },
+
+  // ── 건강/의료 ─────────────────────────────────────────────────────────
+  { id:'hlth1',  category:'health', name:'병원',    emoji:'🏥', aihubWord:'병원'    },
+  { id:'hlth2',  category:'health', name:'의사',    emoji:'👨‍⚕️', aihubWord:'의사'    },
+  { id:'hlth3',  category:'health', name:'간호사',  emoji:'👩‍⚕️', aihubWord:'간호사'  },
+  { id:'hlth4',  category:'health', name:'약',      emoji:'💊', aihubWord:'약'      },
+  { id:'hlth5',  category:'health', name:'감기',    emoji:'🤧', aihubWord:'감기'    },
+  { id:'hlth6',  category:'health', name:'치료',    emoji:'🩺', aihubWord:'치료'    },
+  { id:'hlth7',  category:'health', name:'입원',    emoji:'🛏️', aihubWord:'입원'    },
+  { id:'hlth8',  category:'health', name:'퇴원',    emoji:'🚶', aihubWord:'퇴원'    },
+  { id:'hlth9',  category:'health', name:'응급실',  emoji:'🚨', aihubWord:'응급실'  },
+  { id:'hlth10', category:'health', name:'건강',    emoji:'💪', aihubWord:'건강'    },
+  { id:'hlth11', category:'health', name:'통증',    emoji:'🤕', aihubWord:'통증'    },
+  { id:'hlth12', category:'health', name:'당뇨병',  emoji:'🩸', aihubWord:'당뇨병'  },
+  { id:'hlth13', category:'health', name:'치매',    emoji:'🧠', aihubWord:'치매'    },
+  { id:'hlth14', category:'health', name:'보청기',  emoji:'👂', aihubWord:'보청기'  },
+  { id:'hlth15', category:'health', name:'소화불량', emoji:'🤢', aihubWord:'소화불량'},
+
+  // ── 시간/날짜 ─────────────────────────────────────────────────────────
+  { id:'time1',  category:'time', name:'오늘',    emoji:'📅', aihubWord:'오늘'    },
+  { id:'time2',  category:'time', name:'하루',    emoji:'🌅', aihubWord:'하루'    },
+  { id:'time3',  category:'time', name:'한달',    emoji:'📆', aihubWord:'한달'    },
+  { id:'time4',  category:'time', name:'1년',     emoji:'🗓️', aihubWord:'1년'    },
+  { id:'time5',  category:'time', name:'밤',      emoji:'🌙', aihubWord:'밤'      },
+  { id:'time6',  category:'time', name:'시간',    emoji:'⏰', aihubWord:'시간'    },
+  { id:'time7',  category:'time', name:'시계',    emoji:'🕐', aihubWord:'시계'    },
+  { id:'time8',  category:'time', name:'생일',    emoji:'🎂', aihubWord:'생일'    },
+  { id:'time9',  category:'time', name:'월요일',  emoji:'📋', aihubWord:'월요일'  },
+  { id:'time10', category:'time', name:'화요일',  emoji:'📋', aihubWord:'화요일'  },
+  { id:'time11', category:'time', name:'수요일',  emoji:'📋', aihubWord:'수요일'  },
+  { id:'time12', category:'time', name:'금요일',  emoji:'📋', aihubWord:'금요일'  },
+  { id:'time13', category:'time', name:'일요일',  emoji:'🌟', aihubWord:'일요일'  },
+  { id:'time14', category:'time', name:'생년월일', emoji:'📋', aihubWord:'생년월일'},
+  { id:'time15', category:'time', name:'사계절',  emoji:'🍂', aihubWord:'사계절'  },
+
+  // ── 장소 ─────────────────────────────────────────────────────────────
+  { id:'pl1',  category:'place', name:'학교',   emoji:'🏫', aihubWord:'학교'   },
+  { id:'pl2',  category:'place', name:'병원',   emoji:'🏥', aihubWord:'병원'   },
+  { id:'pl3',  category:'place', name:'식당',   emoji:'🍽️', aihubWord:'식당'   },
+  { id:'pl4',  category:'place', name:'공항',   emoji:'✈️', aihubWord:'공항'   },
+  { id:'pl5',  category:'place', name:'은행',   emoji:'🏦', aihubWord:'은행'   },
+  { id:'pl6',  category:'place', name:'편의점', emoji:'🏪', aihubWord:'편의점' },
+  { id:'pl7',  category:'place', name:'서점',   emoji:'📚', aihubWord:'서점'   },
+  { id:'pl8',  category:'place', name:'카페',   emoji:'☕', aihubWord:'카페'   },
+  { id:'pl9',  category:'place', name:'백화점', emoji:'🏬', aihubWord:'백화점' },
+  { id:'pl10', category:'place', name:'화장실', emoji:'🚻', aihubWord:'화장실' },
+  { id:'pl11', category:'place', name:'주유소', emoji:'⛽', aihubWord:'주유소' },
+  { id:'pl12', category:'place', name:'주차장', emoji:'🅿️', aihubWord:'주차장' },
+  { id:'pl13', category:'place', name:'터미널', emoji:'🚉', aihubWord:'터미널' },
+
+  // ── 교통 ─────────────────────────────────────────────────────────────
+  { id:'tr1',  category:'transport', name:'버스',     emoji:'🚌', aihubWord:'버스'     },
+  { id:'tr2',  category:'transport', name:'지하철',   emoji:'🚇', aihubWord:'지하철'   },
+  { id:'tr3',  category:'transport', name:'택시',     emoji:'🚕', aihubWord:'택시'     },
+  { id:'tr4',  category:'transport', name:'기차',     emoji:'🚂', aihubWord:'기차'     },
+  { id:'tr5',  category:'transport', name:'자전거',   emoji:'🚲', aihubWord:'자전거'   },
+  { id:'tr6',  category:'transport', name:'자가용',   emoji:'🚗', aihubWord:'자가용'   },
+  { id:'tr7',  category:'transport', name:'운전',     emoji:'🚗', aihubWord:'운전'     },
+  { id:'tr8',  category:'transport', name:'주차',     emoji:'🅿️', aihubWord:'주차'     },
+  { id:'tr9',  category:'transport', name:'신호등',   emoji:'🚦', aihubWord:'신호등'   },
+  { id:'tr10', category:'transport', name:'횡단보도', emoji:'🚶', aihubWord:'횡단보도' },
+  { id:'tr11', category:'transport', name:'운전면허', emoji:'🪪', aihubWord:'운전면허' },
+  { id:'tr12', category:'transport', name:'차도',     emoji:'🛣️', aihubWord:'차도'     },
+  { id:'tr13', category:'transport', name:'운전자',   emoji:'🧑‍✈️', aihubWord:'운전자'   },
+
+  // ── 직업 ─────────────────────────────────────────────────────────────
+  { id:'job1',  category:'jobs', name:'의사',    emoji:'👨‍⚕️', aihubWord:'의사'    },
+  { id:'job2',  category:'jobs', name:'간호사',  emoji:'👩‍⚕️', aihubWord:'간호사'  },
+  { id:'job3',  category:'jobs', name:'교수',    emoji:'👨‍🏫', aihubWord:'교수'    },
+  { id:'job4',  category:'jobs', name:'경찰',    emoji:'👮', aihubWord:'경찰'    },
+  { id:'job5',  category:'jobs', name:'농부',    emoji:'👨‍🌾', aihubWord:'농부'    },
+  { id:'job6',  category:'jobs', name:'요리사',  emoji:'👨‍🍳', aihubWord:'요리사'  },
+  { id:'job7',  category:'jobs', name:'디자이너', emoji:'👨‍🎨', aihubWord:'디자이너'},
+  { id:'job8',  category:'jobs', name:'가수',    emoji:'🎤', aihubWord:'가수'    },
+  { id:'job9',  category:'jobs', name:'화가',    emoji:'🎨', aihubWord:'화가'    },
+  { id:'job10', category:'jobs', name:'음악가',  emoji:'🎵', aihubWord:'음악가'  },
+  { id:'job11', category:'jobs', name:'사진작가', emoji:'📷', aihubWord:'사진작가'},
+  { id:'job12', category:'jobs', name:'통역사',  emoji:'🌐', aihubWord:'통역사'  },
+  { id:'job13', category:'jobs', name:'직원',    emoji:'🧑‍💼', aihubWord:'직원'    },
+  { id:'job14', category:'jobs', name:'사장',    emoji:'👔', aihubWord:'사장'    },
+
+  // ── 학교/교육 ─────────────────────────────────────────────────────────
+  { id:'sch1',  category:'school', name:'학교',    emoji:'🏫', aihubWord:'학교'    },
+  { id:'sch2',  category:'school', name:'교실',    emoji:'🏛️', aihubWord:'교실'    },
+  { id:'sch3',  category:'school', name:'교장',    emoji:'👨‍🏫', aihubWord:'교장'    },
+  { id:'sch4',  category:'school', name:'교무실',  emoji:'🏢', aihubWord:'교무실'  },
+  { id:'sch5',  category:'school', name:'시험',    emoji:'📝', aihubWord:'시험'    },
+  { id:'sch6',  category:'school', name:'독서',    emoji:'📖', aihubWord:'독서'    },
+  { id:'sch7',  category:'school', name:'등교',    emoji:'🎒', aihubWord:'등교'    },
+  { id:'sch8',  category:'school', name:'반장',    emoji:'⭐', aihubWord:'반장'    },
+  { id:'sch9',  category:'school', name:'학습',    emoji:'✏️', aihubWord:'학습'    },
+  { id:'sch10', category:'school', name:'학업',    emoji:'📚', aihubWord:'학업'    },
+  { id:'sch11', category:'school', name:'고등학교', emoji:'🏫', aihubWord:'고등학교'},
+
+  // ── 날씨/자연 ─────────────────────────────────────────────────────────
+  { id:'wthr1',  category:'weather', name:'비',       emoji:'🌧️', aihubWord:'비'       },
+  { id:'wthr2',  category:'weather', name:'눈',       emoji:'❄️', aihubWord:'눈'       },
+  { id:'wthr3',  category:'weather', name:'바람',     emoji:'💨', aihubWord:'바람'     },
+  { id:'wthr4',  category:'weather', name:'강풍',     emoji:'🌬️', aihubWord:'강풍'     },
+  { id:'wthr5',  category:'weather', name:'장마',     emoji:'☔', aihubWord:'장마'     },
+  { id:'wthr6',  category:'weather', name:'홍수',     emoji:'🌊', aihubWord:'홍수'     },
+  { id:'wthr7',  category:'weather', name:'햇빛',     emoji:'☀️', aihubWord:'햇빛'     },
+  { id:'wthr8',  category:'weather', name:'온도',     emoji:'🌡️', aihubWord:'온도'     },
+  { id:'wthr9',  category:'weather', name:'덥다',     emoji:'🥵', aihubWord:'덥다'     },
+  { id:'wthr10', category:'weather', name:'춥다',     emoji:'🥶', aihubWord:'춥다'     },
+  { id:'wthr11', category:'weather', name:'따뜻하다', emoji:'🌤️', aihubWord:'따뜻하다' },
+  { id:'wthr12', category:'weather', name:'시원하다', emoji:'😌', aihubWord:'시원하다' },
+  { id:'wthr13', category:'weather', name:'강',       emoji:'🏞️', aihubWord:'강'       },
+  { id:'wthr14', category:'weather', name:'바다',     emoji:'🌊', aihubWord:'바다'     },
+  { id:'wthr15', category:'weather', name:'숲',       emoji:'🌲', aihubWord:'숲'       },
+
+  // ── 색깔 ─────────────────────────────────────────────────────────────
+  { id:'col1',  category:'colors', name:'빨강',  emoji:'🔴', aihubWord:'빨강'  },
+  { id:'col2',  category:'colors', name:'파랑',  emoji:'🔵', aihubWord:'파랑'  },
+  { id:'col3',  category:'colors', name:'노랑',  emoji:'🟡', aihubWord:'노랑'  },
+  { id:'col4',  category:'colors', name:'초록',  emoji:'🟢', aihubWord:'초록'  },
+  { id:'col5',  category:'colors', name:'검정',  emoji:'⚫', aihubWord:'검정'  },
+  { id:'col6',  category:'colors', name:'흰색',  emoji:'⚪', aihubWord:'흰'    },
+  { id:'col7',  category:'colors', name:'회색',  emoji:'🔘', aihubWord:'회색'  },
+  { id:'col8',  category:'colors', name:'분홍',  emoji:'🌸', aihubWord:'분홍'  },
+  { id:'col9',  category:'colors', name:'보라',  emoji:'🟣', aihubWord:'보라색' },
+  { id:'col10', category:'colors', name:'갈색',  emoji:'🟤', aihubWord:'갈색'  },
+
+  // ── 스포츠 ─────────────────────────────────────────────────────────────
+  { id:'sp1',  category:'sports', name:'야구',     emoji:'⚾', aihubWord:'야구'     },
+  { id:'sp2',  category:'sports', name:'배드민턴', emoji:'🏸', aihubWord:'배드민턴' },
+  { id:'sp3',  category:'sports', name:'테니스',   emoji:'🎾', aihubWord:'테니스'   },
+  { id:'sp4',  category:'sports', name:'수영',     emoji:'🏊', aihubWord:'수영'     },
+  { id:'sp5',  category:'sports', name:'마라톤',   emoji:'🏃', aihubWord:'마라톤'   },
+  { id:'sp6',  category:'sports', name:'권투',     emoji:'🥊', aihubWord:'권투'     },
+  { id:'sp7',  category:'sports', name:'유도',     emoji:'🥋', aihubWord:'유도'     },
+  { id:'sp8',  category:'sports', name:'운동선수', emoji:'🏅', aihubWord:'운동선수' },
+  { id:'sp9',  category:'sports', name:'운동장',   emoji:'🏟️', aihubWord:'운동장'   },
+  { id:'sp10', category:'sports', name:'수영장',   emoji:'🏊', aihubWord:'수영장'   },
+
+  // ── 기초표현 ─────────────────────────────────────────────────────────
+  { id:'bas1',  category:'basic', name:'나',     emoji:'👤', aihubWord:'나'     },
+  { id:'bas2',  category:'basic', name:'너',     emoji:'👥', aihubWord:'너'     },
+  { id:'bas3',  category:'basic', name:'당신',   emoji:'🫵', aihubWord:'당신'   },
+  { id:'bas4',  category:'basic', name:'저',     emoji:'🙋', aihubWord:'저'     },
+  { id:'bas5',  category:'basic', name:'여기',   emoji:'📍', aihubWord:'여기'   },
+  { id:'bas6',  category:'basic', name:'저기',   emoji:'👉', aihubWord:'저기'   },
+  { id:'bas7',  category:'basic', name:'어디',   emoji:'❓', aihubWord:'어디'   },
+  { id:'bas8',  category:'basic', name:'무엇',   emoji:'🤔', aihubWord:'무엇'   },
+  { id:'bas9',  category:'basic', name:'왜',     emoji:'❓', aihubWord:'왜'     },
+  { id:'bas10', category:'basic', name:'어떻게', emoji:'🤷', aihubWord:'어떻게' },
+  { id:'bas11', category:'basic', name:'누구',   emoji:'👤', aihubWord:'누구'   },
+  { id:'bas12', category:'basic', name:'있다',   emoji:'✅', aihubWord:'있다'   },
+  { id:'bas13', category:'basic', name:'없다',   emoji:'❌', aihubWord:'없다'   },
+  { id:'bas14', category:'basic', name:'알다',   emoji:'💡', aihubWord:'알다'   },
+
+  // ── 일상 ─────────────────────────────────────────────────────────────
+  { id:'dl1',  category:'daily', name:'가다',     emoji:'🚶', aihubWord:'가다'     },
+  { id:'dl2',  category:'daily', name:'웃다',     emoji:'😄', aihubWord:'웃다'     },
+  { id:'dl3',  category:'daily', name:'자다',     emoji:'😴', aihubWord:'자다'     },
+  { id:'dl4',  category:'daily', name:'일어나다', emoji:'🌅', aihubWord:'일어나다' },
+  { id:'dl5',  category:'daily', name:'잠자다',   emoji:'💤', aihubWord:'잠자다'   },
+  { id:'dl6',  category:'daily', name:'걷다',     emoji:'🚶', aihubWord:'걷다'     },
+  { id:'dl7',  category:'daily', name:'달리다',   emoji:'🏃', aihubWord:'달리다'   },
+  { id:'dl8',  category:'daily', name:'놀다',     emoji:'🎮', aihubWord:'놀다'     },
+  { id:'dl9',  category:'daily', name:'나누다',   emoji:'🤝', aihubWord:'나누다'   },
+  { id:'dl10', category:'daily', name:'세수',     emoji:'💧', aihubWord:'세수'     },
+  { id:'dl11', category:'daily', name:'양치',     emoji:'🦷', aihubWord:'양치'     },
+  { id:'dl12', category:'daily', name:'돌보다',   emoji:'🫂', aihubWord:'돌보다'   },
+  { id:'dl13', category:'daily', name:'존경하다', emoji:'🙏', aihubWord:'존경하다' },
+  { id:'dl14', category:'daily', name:'반성하다', emoji:'🤔', aihubWord:'반성하다' },
+  { id:'dl15', category:'daily', name:'잘못하다', emoji:'😔', aihubWord:'잘못하다' },
+
+  // ── 성격 ─────────────────────────────────────────────────────────────
+  { id:'ch1',  category:'character', name:'겸손',    emoji:'🙇', aihubWord:'겸손'    },
+  { id:'ch2',  category:'character', name:'배려',    emoji:'💝', aihubWord:'배려'    },
+  { id:'ch3',  category:'character', name:'성품',    emoji:'⭐', aihubWord:'성품'    },
+  { id:'ch4',  category:'character', name:'이해',    emoji:'💡', aihubWord:'이해'    },
+  { id:'ch5',  category:'character', name:'인격',    emoji:'🌟', aihubWord:'인격'    },
+  { id:'ch6',  category:'character', name:'인성',    emoji:'✨', aihubWord:'인성'    },
+  { id:'ch7',  category:'character', name:'인심',    emoji:'💛', aihubWord:'인심'    },
+  { id:'ch8',  category:'character', name:'지혜',    emoji:'🦉', aihubWord:'지혜'    },
+  { id:'ch9',  category:'character', name:'너그럽다',emoji:'🫶', aihubWord:'너그럽다'},
+  { id:'ch10', category:'character', name:'솔직하다',emoji:'🗣️', aihubWord:'솔직하다'},
+  { id:'ch11', category:'character', name:'친하다',  emoji:'🤗', aihubWord:'친하다'  },
+  { id:'ch12', category:'character', name:'독특',    emoji:'🦄', aihubWord:'독특'    },
+  { id:'ch13', category:'character', name:'계획',    emoji:'📋', aihubWord:'계획'    },
+  { id:'ch14', category:'character', name:'결심',    emoji:'💪', aihubWord:'결심'    },
+
+  // ── 사회 ─────────────────────────────────────────────────────────────
+  { id:'soc1',  category:'society', name:'남자',    emoji:'👨', aihubWord:'남자'    },
+  { id:'soc2',  category:'society', name:'여자',    emoji:'👩', aihubWord:'여자'    },
+  { id:'soc3',  category:'society', name:'어른',    emoji:'🧑', aihubWord:'어른'    },
+  { id:'soc4',  category:'society', name:'노인',    emoji:'👴', aihubWord:'노인'    },
+  { id:'soc5',  category:'society', name:'청년',    emoji:'👦', aihubWord:'청년'    },
+  { id:'soc6',  category:'society', name:'사람',    emoji:'🧑', aihubWord:'사람'    },
+  { id:'soc7',  category:'society', name:'일반인',  emoji:'👤', aihubWord:'일반인'  },
+  { id:'soc8',  category:'society', name:'한국인',  emoji:'🇰🇷', aihubWord:'한국인'  },
+  { id:'soc9',  category:'society', name:'타인',    emoji:'👥', aihubWord:'타인'    },
+  { id:'soc10', category:'society', name:'친구',    emoji:'👫', aihubWord:'친구'    },
+  { id:'soc11', category:'society', name:'노래',    emoji:'🎵', aihubWord:'노래'    },
+  { id:'soc12', category:'society', name:'미소',    emoji:'😊', aihubWord:'미소'    },
+
+  // ── 인생 ─────────────────────────────────────────────────────────────
+  { id:'lf1',  category:'life', name:'결혼',   emoji:'💍', aihubWord:'결혼'   },
+  { id:'lf2',  category:'life', name:'결혼식', emoji:'👰', aihubWord:'결혼식' },
+  { id:'lf3',  category:'life', name:'상담',   emoji:'💬', aihubWord:'상담'   },
+  { id:'lf4',  category:'life', name:'생활',   emoji:'🏠', aihubWord:'생활'   },
+  { id:'lf5',  category:'life', name:'생계',   emoji:'💰', aihubWord:'생계'   },
+  { id:'lf6',  category:'life', name:'재산',   emoji:'💵', aihubWord:'재산'   },
+  { id:'lf7',  category:'life', name:'출장',   emoji:'🧳', aihubWord:'출장'   },
+  { id:'lf8',  category:'life', name:'관광',   emoji:'🗺️', aihubWord:'관광'   },
+  { id:'lf9',  category:'life', name:'사별',   emoji:'🕯️', aihubWord:'사별'   },
+  { id:'lf10', category:'life', name:'성공',   emoji:'🏆', aihubWord:'성공'   },
+  { id:'lf11', category:'life', name:'노화',   emoji:'👴', aihubWord:'노화'   },
+  { id:'lf12', category:'life', name:'고백',   emoji:'💌', aihubWord:'고백'   },
+  { id:'lf13', category:'life', name:'사기',   emoji:'🚨', aihubWord:'사기'   },
+  { id:'lf14', category:'life', name:'추억',   emoji:'📸', aihubWord:'추억'   },
+  { id:'lf15', category:'life', name:'희망',   emoji:'🌟', aihubWord:'희망'   },
 ];
