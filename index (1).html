@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>수어 학습 AI</title>
+  
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      background: #0f172a;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 24px;
+    }
+
+    .controls {
+      margin: 20px;
+    }
+
+    select, button {
+      font-size: 18px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      margin: 4px;
+    }
+
+    button {
+      cursor: pointer;
+      background: #38bdf8;
+      color: #0f172a;
+      font-weight: bold;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .panel {
+      background: #1e293b;
+      padding: 16px;
+      border-radius: 14px;
+    }
+
+    canvas, video {
+      width: 520px;
+      height: 390px;
+      background: black;
+      border-radius: 12px;
+    }
+
+    #video {
+      display: none;
+    }
+
+    .result {
+      font-size: 30px;
+      margin-top: 25px;
+      font-weight: bold;
+    }
+
+    .feedback {
+      font-size: 22px;
+      margin-top: 10px;
+      color: #38bdf8;
+    }
+
+    .overlay-card {
+      position: fixed;
+      left: 50%;
+      bottom: 45px;
+      transform: translateX(-50%);
+      width: 420px;
+      padding: 24px 30px;
+      background: rgba(15, 23, 42, 0.92);
+      border: 2px solid #0f766e;
+      border-radius: 18px;
+      box-shadow: 0 0 25px rgba(45, 212, 191, 0.35);
+      z-index: 999;
+    }
+
+    .emoji {
+      font-size: 36px;
+       margin-bottom: 8px;
+    }
+
+    .word {
+      font-size: 32px;
+       font-weight: bold;
+       color: white;
+    }
+
+      .score {
+      margin-top: 10px;
+       font-size: 22px;
+       color: #38bdf8;
+    }
+
+    .feedback {
+      margin-top: 8px;
+      font-size: 16px;
+      color: #cbd5e1;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>수어 학습 AI</h1>
+
+  <div class="controls">
+    <select id="wordSelect">
+      <option>단어 불러오는 중...</option>
+    </select>
+
+    <button onclick="loadReference()">정답 동작 보기</button>
+    <button onclick="startPractice()">연습 시작</button>
+    <button onclick="finishPractice()">채점하기</button>
+  </div>
+
+  <div class="container">
+    <div class="panel">
+      <h2>정답 수어</h2>
+      <canvas id="refCanvas" width="520" height="390"></canvas>
+    </div>
+
+    <div class="panel">
+      <h2>사용자 동작</h2>
+      <video id="video" autoplay muted playsinline></video>
+      <canvas id="userCanvas" width="520" height="390"></canvas>
+    </div>
+  </div>
+
+  <div class="overlay-card" id="resultCard">
+    <div class="emoji">👋</div>
+    <div class="word" id="wordText">수어 학습</div>
+    <div class="score" id="scoreText">점수: -</div>
+    <div class="feedback" id="feedbackText">정답 동작을 선택하세요.</div>
+  </div>
+
+<script>
+const refCanvas = document.getElementById("refCanvas");
+const refCtx = refCanvas.getContext("2d");
+
+const userCanvas = document.getElementById("userCanvas");
+const userCtx = userCanvas.getContext("2d");
+
+const video = document.getElementById("video");
+const wordSelect = document.getElementById("wordSelect");
+
+let currentLabel = "";
+let refFrameIndex = 0;
+let refTimer = null;
+
+let userSequence = [];
+let isPracticing = false;
+
+// ==========================
+// 단어 목록 불러오기
+// ==========================
+async function loadWords() {
+  const res = await fetch("/api/words");
+  const data = await res.json();
+
+  wordSelect.innerHTML = "";
+
+  data.words.forEach(word => {
+    const option = document.createElement("option");
+
+    option.value = word.folder;       // 실제 폴더명
+    option.textContent = word.label;  // 화면에 보이는 이름
+    option.dataset.label = word.label;
+
+    wordSelect.appendChild(option);
+  });
+
+  if (data.words.length > 0) {
+    currentLabel = data.words[0].label;
+    document.getElementById("wordText").innerText = currentLabel;
+  }
+}
+
+// ==========================
+// 정답 sequence 불러오기
+// ==========================
+async function loadReference() {
+  const folderName = wordSelect.value;
+
+  currentLabel =
+    wordSelect.options[wordSelect.selectedIndex].dataset.label;
+
+  const res = await fetch(`/api/reference/${folderName}`);
+  const data = await res.json();
+
+  referenceSequence = data.sequence;
+  refFrameIndex = 0;
+
+  if (refTimer) {
+    clearInterval(refTimer);
+  }
+
+  refTimer = setInterval(() => {
+    if (referenceSequence.length === 0) return;
+
+    drawOpenPoseFrame(
+      refCtx,
+      referenceSequence[refFrameIndex],
+      refCanvas.width,
+      refCanvas.height,
+      "#38bdf8"
+    );
+
+    refFrameIndex++;
+
+    if (refFrameIndex >= referenceSequence.length) {
+      refFrameIndex = 0;
+    }
+  }, 33);
+
+  document.getElementById("wordText").innerText = currentLabel;
+  document.getElementById("scoreText").innerText = "정확도 -";
+  document.getElementById("feedbackText").innerText =
+    "정답 동작을 보고 따라 해보세요.";
+}
+
+// ==========================
+// OpenPose 335차원 feature 그리기
+// ==========================
+function drawOpenPoseFrame(ctx, feature, width, height, color) {
+  ctx.clearRect(0, 0, width, height);
+
+  ctx.fillStyle = "black";
+  ctx.fillRect(0, 0, width, height);
+
+  if (!feature || feature.length === 0) return;
+
+  const pose = feature.slice(0, 50);
+  const left = feature.slice(50, 100);
+  const right = feature.slice(100, 150);
+
+  // 몸통/팔/다리
+  drawBodySkeleton(ctx, pose, width, height);
+
+  // 머리
+  drawHead(ctx, pose, width, height);
+
+  // 손
+  drawHandSkeleton(ctx, left, width, height, "#22c55e");
+  drawHandSkeleton(ctx, right, width, height, "#f97316");
+
+  // 관절 점
+  drawPoints(ctx, pose, width, height, "#38bdf8", 2);
+  drawPoints(ctx, left, width, height, "#22c55e", 1.8);
+  drawPoints(ctx, right, width, height, "#f97316", 1.8);
+}
+
+function drawLine(ctx, points, a, b, width, height, color) {
+  const ax = points[a * 2];
+  const ay = points[a * 2 + 1];
+  const bx = points[b * 2];
+  const by = points[b * 2 + 1];
+
+  if (!ax || !ay || !bx || !by) return;
+
+  let x1 = ax <= 1 ? ax * width : ax / 1920 * width;
+  let y1 = ay <= 1 ? ay * height : ay / 1080 * height;
+  let x2 = bx <= 1 ? bx * width : bx / 1920 * width;
+  let y2 = by <= 1 ? by * height : by / 1080 * height;
+
+  const dist = Math.hypot(x1 - x2, y1 - y2);
+  if (dist > 120) return;
+
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 3;
+
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+}
+
+function drawHandSkeleton(ctx, hand, width, height, color) {
+  const connections = [
+    [0,1],[1,2],[2,3],[3,4],
+    [0,5],[5,6],[6,7],[7,8],
+    [0,9],[9,10],[10,11],[11,12],
+    [0,13],[13,14],[14,15],[15,16],
+    [0,17],[17,18],[18,19],[19,20]
+  ];
+
+  connections.forEach(([a, b]) => {
+    drawLine(ctx, hand, a, b, width, height, color);
+  });
+}
+
+function drawPoints(ctx, arr, width, height, color, size = 2) {
+  ctx.fillStyle = color;
+
+  for (let i = 0; i < arr.length; i += 2) {
+    const x = arr[i];
+    const y = arr[i + 1];
+
+    if (!x || !y) continue;
+
+    let px = x;
+    let py = y;
+
+    if (px <= 1 && py <= 1) {
+      px = px * width;
+      py = py * height;
+    } else {
+      px = px / 1920 * width;
+      py = py / 1080 * height;
+    }
+
+    ctx.beginPath();
+    ctx.arc(px, py, size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function toCanvasPoint(arr, index, width, height) {
+  const x = arr[index * 2];
+  const y = arr[index * 2 + 1];
+
+  if (!x || !y) return null;
+
+  let px = x;
+  let py = y;
+
+  if (px <= 1 && py <= 1) {
+    px = px * width;
+    py = py * height;
+  } else {
+    px = px / 1920 * width;
+    py = py / 1080 * height;
+  }
+
+  return { x: px, y: py };
+}
+
+function drawThickLine(ctx, p1, p2, color, width = 10) {
+  if (!p1 || !p2) return;
+
+  const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+  if (dist > 160) return;
+
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  ctx.lineCap = "round";
+
+  ctx.beginPath();
+  ctx.moveTo(p1.x, p1.y);
+  ctx.lineTo(p2.x, p2.y);
+  ctx.stroke();
+}
+
+function drawBodySkeleton(ctx, pose, width, height) {
+  const bodyColor = "#94a3b8";
+  const armColor = "#60a5fa";
+  const legColor = "#64748b";
+
+  const connections = [
+    [1, 2, armColor, 10],
+    [2, 3, armColor, 9],
+    [3, 4, armColor, 8],
+
+    [1, 5, armColor, 10],
+    [5, 6, armColor, 9],
+    [6, 7, armColor, 8],
+
+    [1, 8, bodyColor, 13],
+    [8, 9, legColor, 10],
+    [9, 10, legColor, 9],
+    [10, 11, legColor, 8],
+
+    [8, 12, legColor, 10],
+    [12, 13, legColor, 9],
+    [13, 14, legColor, 8],
+
+    [2, 5, bodyColor, 12],
+    [9, 12, bodyColor, 12]
+  ];
+
+  connections.forEach(([a, b, c, w]) => {
+    const p1 = toCanvasPoint(pose, a, width, height);
+    const p2 = toCanvasPoint(pose, b, width, height);
+    drawThickLine(ctx, p1, p2, c, w);
+  });
+}
+
+function drawHead(ctx, pose, width, height) {
+  const nose = toCanvasPoint(pose, 0, width, height);
+  const neck = toCanvasPoint(pose, 1, width, height);
+
+  if (!nose) return;
+
+  let radius = 18;
+
+  if (neck) {
+    radius = Math.max(14, Math.min(28, Math.abs(neck.y - nose.y) * 0.8));
+  }
+
+  ctx.fillStyle = "#facc15";
+  ctx.beginPath();
+  ctx.arc(nose.x, nose.y - radius * 0.2, radius, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "black";
+  ctx.beginPath();
+  ctx.arc(nose.x - radius * 0.35, nose.y - radius * 0.35, 2.5, 0, Math.PI * 2);
+  ctx.arc(nose.x + radius * 0.35, nose.y - radius * 0.35, 2.5, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+// ==========================
+// 사용자 연습 시작
+// ==========================
+function startPractice() {
+  userSequence = [];
+  isPracticing = true;
+
+  document.getElementById("wordText").innerText = currentLabel;
+  document.getElementById("scoreText").innerText = "측정 중...";
+  document.getElementById("feedbackText").innerText =
+    "정답 수어를 따라 해주세요.";
+}
+
+// ==========================
+// 사용자 동작 채점
+// ==========================
+async function finishPractice() {
+  isPracticing = false;
+
+  currentLabel =
+    wordSelect.options[wordSelect.selectedIndex].dataset.label;
+
+  document.getElementById("wordText").innerText = currentLabel;
+
+  const folderName = wordSelect.value;
+
+  try {
+    const res = await fetch("/api/compare", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        folder_name: folderName,
+        user_sequence: userSequence
+      })
+    });
+
+    const data = await res.json();
+
+    console.log("채점 결과:", data);
+
+    if (data.status === "ok") {
+      document.getElementById("scoreText").innerText =
+        `정확도 ${data.score}%`;
+
+      let feedbackText =
+        data.feedback || "채점 완료";
+
+      if (data.tips && data.tips.length > 0) {
+        feedbackText += "\n\n" + data.tips.join("\n");
+      }
+
+      document.getElementById("feedbackText").innerText =
+        feedbackText;
+
+    } else {
+      document.getElementById("scoreText").innerText =
+        "정확도 0%";
+
+      document.getElementById("feedbackText").innerText =
+        data.message || "채점 실패";
+    }
+
+  } catch (error) {
+    console.error(error);
+
+    document.getElementById("scoreText").innerText = "정확도 0%";
+    document.getElementById("feedbackText").innerText =
+      "서버 오류가 발생했어요. app.py 터미널을 확인하세요.";
+  }
+}
+
+// ==========================
+// MediaPipe 사용자 손 좌표 추출
+// ==========================
+function handLandmarksTo335(results) {
+  let feature = [];
+
+  if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+    for (const landmarks of results.multiHandLandmarks) {
+      for (const lm of landmarks) {
+        feature.push(lm.x);
+        feature.push(lm.y);
+      }
+    }
+  }
+
+  while (feature.length < 335) {
+    feature.push(0);
+  }
+
+  if (feature.length > 335) {
+    feature = feature.slice(0, 335);
+  }
+
+  return feature;
+}
+
+// ==========================
+// MediaPipe Hands 설정
+// ==========================
+const hands = new Hands({
+  locateFile: file => {
+    return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+  }
+});
+
+hands.setOptions({
+  maxNumHands: 2,
+  modelComplexity: 1,
+  minDetectionConfidence: 0.7,
+  minTrackingConfidence: 0.7
+});
+
+hands.onResults(results => {
+  userCtx.clearRect(0, 0, userCanvas.width, userCanvas.height);
+
+  // 1. 카메라 영상 좌우반전
+  userCtx.save();
+  userCtx.scale(-1, 1);
+  userCtx.drawImage(
+    results.image,
+    -userCanvas.width,
+    0,
+    userCanvas.width,
+    userCanvas.height
+  );
+  userCtx.restore();
+
+  // 2. skeleton 좌우반전해서 직접 그리기
+  if (results.multiHandLandmarks) {
+    for (const landmarks of results.multiHandLandmarks) {
+      const flippedLandmarks = landmarks.map(lm => ({
+        x: 1 - lm.x,
+        y: lm.y,
+        z: lm.z
+      }));
+
+      drawConnectors(userCtx, flippedLandmarks, HAND_CONNECTIONS, {
+        color: "#00ffcc",
+        lineWidth: 3
+      });
+
+      drawLandmarks(userCtx, flippedLandmarks, {
+        color: "#ff0066",
+        lineWidth: 2
+      });
+    }
+  }
+
+  // 3. 채점용 좌표는 원본 그대로 저장
+  const feature = handLandmarksTo335(results);
+
+  if (isPracticing) {
+    userSequence.push(feature);
+
+    document.getElementById("feedbackText").innerText =
+      `사용자 동작 기록 중... ${userSequence.length}프레임`;
+  }
+});
+
+const camera = new Camera(video, {
+  onFrame: async () => {
+    await hands.send({ image: video });
+  },
+  width: 520,
+  height: 390
+});
+
+camera.start();
+
+loadWords();
+</script>
+
+</body>
+</html>
