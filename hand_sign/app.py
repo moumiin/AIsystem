@@ -24,8 +24,10 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(BASE_DIR, "frontend", "static")
 DATASETS_DIR = os.path.join(BASE_DIR, "datasets")
 DB_PATH = os.environ.get("APP_DB_PATH", os.path.join(BASE_DIR, "app_data.sqlite3"))
+MONGODB_URI = os.environ.get("MONGODB_URI", "").strip()
+MONGODB_DB = os.environ.get("MONGODB_DB", "hand_sign_learning").strip()
 
-from auth_store import AuthStore
+from auth_store import create_auth_store
 from jamo_db import find_jamo, JAMO_DB
 from jamo_ai import add_sample, load_model, predict as predict_jamo, train_model
 try:
@@ -41,7 +43,7 @@ app = FastAPI(title="수어 학습 서비스")
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 if os.path.isdir(DATASETS_DIR):
     app.mount("/datasets", StaticFiles(directory=DATASETS_DIR), name="datasets")
-auth_store = AuthStore(DB_PATH)
+auth_store = create_auth_store(DB_PATH, MONGODB_URI, MONGODB_DB)
 
 
 LOCAL_INDEX_PATH = os.path.join(BASE_DIR, "local_learning_keypoint_index.json")
