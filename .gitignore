@@ -7,3 +7,7 @@ hand_sign/datasets/
 hand_sign/frontend/react/node_modules/
 hand_sign/frontend/react/dist/
 hand_sign/__pycache__/
+
+code/
+model.py
+words.txt
