@@ -3,14 +3,25 @@ class AuthManager {
     this.token = localStorage.getItem('handSignToken') || '';
     this.user = null;
     this.el = {
-      form: document.getElementById('auth-form'),
-      username: document.getElementById('auth-username'),
-      password: document.getElementById('auth-password'),
-      login: document.getElementById('auth-login-btn'),
-      register: document.getElementById('auth-register-btn'),
+      bar: document.getElementById('auth-bar'),
+      user: document.getElementById('auth-user'),
+      openLogin: document.getElementById('open-login-btn'),
+      openRegister: document.getElementById('open-register-btn'),
       logout: document.getElementById('auth-logout-btn'),
       status: document.getElementById('auth-status'),
-      user: document.getElementById('auth-user'),
+      loginModal: document.getElementById('login-modal'),
+      registerModal: document.getElementById('register-modal'),
+      loginForm: document.getElementById('login-form'),
+      registerForm: document.getElementById('register-form'),
+      loginUsername: document.getElementById('login-username'),
+      loginPassword: document.getElementById('login-password'),
+      registerUsername: document.getElementById('register-username'),
+      registerPassword: document.getElementById('register-password'),
+      registerDisplayName: document.getElementById('register-display-name'),
+      loginMessage: document.getElementById('login-message'),
+      registerMessage: document.getElementById('register-message'),
+      switchToRegister: document.getElementById('switch-to-register'),
+      switchToLogin: document.getElementById('switch-to-login'),
       summary: document.getElementById('history-summary'),
       list: document.getElementById('history-list'),
     };
@@ -19,12 +30,47 @@ class AuthManager {
   }
 
   _bind() {
-    this.el.login?.addEventListener('click', () => this.login());
-    this.el.register?.addEventListener('click', () => this.register());
+    this.el.openLogin?.addEventListener('click', () => this.openModal('login'));
+    this.el.openRegister?.addEventListener('click', () => this.openModal('register'));
     this.el.logout?.addEventListener('click', () => this.logout());
-    this.el.form?.addEventListener('submit', event => {
+    this.el.switchToRegister?.addEventListener('click', () => this.openModal('register'));
+    this.el.switchToLogin?.addEventListener('click', () => this.openModal('login'));
+    this.el.loginForm?.addEventListener('submit', event => {
       event.preventDefault();
       this.login();
+    });
+    this.el.registerForm?.addEventListener('submit', event => {
+      event.preventDefault();
+      this.register();
+    });
+
+    document.querySelectorAll('[data-auth-close]').forEach(btn => {
+      btn.addEventListener('click', () => this.closeModals());
+    });
+    [this.el.loginModal, this.el.registerModal].forEach(modal => {
+      modal?.addEventListener('click', event => {
+        if (event.target === modal) this.closeModals();
+      });
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') this.closeModals();
+    });
+  }
+
+  openModal(type) {
+    this.closeModals();
+    const modal = type === 'register' ? this.el.registerModal : this.el.loginModal;
+    const input = type === 'register' ? this.el.registerUsername : this.el.loginUsername;
+    modal?.classList.add('active');
+    modal?.setAttribute('aria-hidden', 'false');
+    this.setModalMessage(type, '');
+    setTimeout(() => input?.focus(), 40);
+  }
+
+  closeModals() {
+    [this.el.loginModal, this.el.registerModal].forEach(modal => {
+      modal?.classList.remove('active');
+      modal?.setAttribute('aria-hidden', 'true');
     });
   }
 
@@ -46,35 +92,57 @@ class AuthManager {
   }
 
   async login() {
-    await this.authenticate('/api/auth/login');
+    const username = this.el.loginUsername?.value.trim();
+    const password = this.el.loginPassword?.value.trim();
+    await this.authenticate('/api/auth/login', {
+      username,
+      password,
+      display_name: username,
+    }, 'login');
   }
 
   async register() {
-    await this.authenticate('/api/auth/register');
+    const username = this.el.registerUsername?.value.trim();
+    const password = this.el.registerPassword?.value.trim();
+    const displayName = this.el.registerDisplayName?.value.trim() || username;
+    await this.authenticate('/api/auth/register', {
+      username,
+      password,
+      display_name: displayName,
+    }, 'register');
   }
 
-  async authenticate(url) {
-    const username = this.el.username?.value.trim();
-    const password = this.el.password?.value.trim();
-    if (!username || !password) {
-      this.setStatus('아이디와 비밀번호를 입력해주세요.', 'warn');
+  async authenticate(url, payload, type) {
+    if (!payload.username || !payload.password) {
+      this.setModalMessage(type, '아이디와 비밀번호를 입력해주세요.', 'warn');
       return;
     }
 
     try {
       const data = await this.request(url, {
         method: 'POST',
-        body: JSON.stringify({ username, password, display_name: username }),
+        body: JSON.stringify(payload),
       }, false);
       this.token = data.token;
       this.user = data.user;
       localStorage.setItem('handSignToken', this.token);
-      if (this.el.password) this.el.password.value = '';
+      this.clearInputs();
+      this.closeModals();
       this.renderLoggedIn();
       await this.refreshHistory();
     } catch (err) {
-      this.setStatus(err.message || '로그인에 실패했어요.', 'error');
+      this.setModalMessage(type, err.message || '요청에 실패했어요.', 'error');
     }
+  }
+
+  clearInputs() {
+    [
+      this.el.loginPassword,
+      this.el.registerPassword,
+      this.el.registerDisplayName,
+    ].forEach(input => {
+      if (input) input.value = '';
+    });
   }
 
   async logout() {
@@ -131,13 +199,13 @@ class AuthManager {
   }
 
   renderLoggedIn() {
-    this.el.form?.classList.add('is-logged-in');
+    this.el.bar?.classList.add('is-logged-in');
     if (this.el.user) this.el.user.textContent = `${this.user?.display_name || this.user?.username}님`;
-    this.setStatus('로그인 중. 학습 기록이 저장됩니다.', 'ok');
+    this.setStatus('학습 기록 저장 중', 'ok');
   }
 
   renderLoggedOut() {
-    this.el.form?.classList.remove('is-logged-in');
+    this.el.bar?.classList.remove('is-logged-in');
     if (this.el.user) this.el.user.textContent = '로그인 필요';
     if (this.el.summary) this.el.summary.textContent = '로그인하면 학습 기록이 저장됩니다.';
     if (this.el.list) this.el.list.innerHTML = '<li>아직 표시할 기록이 없어요.</li>';
@@ -167,6 +235,13 @@ class AuthManager {
     if (!this.el.status) return;
     this.el.status.textContent = message;
     this.el.status.dataset.type = type;
+  }
+
+  setModalMessage(type, message, tone = '') {
+    const target = type === 'register' ? this.el.registerMessage : this.el.loginMessage;
+    if (!target) return;
+    target.textContent = message;
+    target.dataset.type = tone;
   }
 }
 

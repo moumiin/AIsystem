@@ -60,10 +60,10 @@ body {
   margin-left: auto;
 }
 
-.auth-form {
+.auth-bar {
   order: 3;
   display: grid;
-  grid-template-columns: auto 92px 92px auto auto;
+  grid-template-columns: auto auto auto;
   align-items: center;
   gap: 6px;
   min-width: 0;
@@ -76,23 +76,7 @@ body {
   white-space: nowrap;
 }
 
-.auth-form input {
-  width: 92px;
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(148,163,184,0.22);
-  border-radius: 7px;
-  color: var(--text);
-  font-size: 0.76rem;
-  height: 30px;
-  padding: 0 8px;
-  outline: none;
-}
-
-.auth-form input:focus {
-  border-color: var(--primary);
-}
-
-.auth-form button {
+.auth-bar button {
   border: 1px solid rgba(108,99,255,0.36);
   background: rgba(108,99,255,0.14);
   border-radius: 7px;
@@ -105,7 +89,7 @@ body {
   white-space: nowrap;
 }
 
-.auth-form button:hover {
+.auth-bar button:hover {
   background: rgba(108,99,255,0.24);
 }
 
@@ -115,17 +99,16 @@ body {
   color: var(--cyan);
 }
 
-.auth-form.is-logged-in {
+.auth-bar.is-logged-in {
   grid-template-columns: auto auto;
 }
 
-.auth-form.is-logged-in input,
-.auth-form.is-logged-in #auth-login-btn,
-.auth-form.is-logged-in #auth-register-btn {
+.auth-bar.is-logged-in #open-login-btn,
+.auth-bar.is-logged-in #open-register-btn {
   display: none;
 }
 
-.auth-form.is-logged-in #auth-logout-btn {
+.auth-bar.is-logged-in #auth-logout-btn {
   display: inline-block;
 }
 
@@ -170,18 +153,14 @@ body {
     margin-left: 0;
   }
 
-  .auth-form {
+  .auth-bar {
     order: 5;
     width: 100%;
-    grid-template-columns: 1fr 1fr auto auto;
+    grid-template-columns: 1fr auto auto;
   }
 
   .auth-user {
     grid-column: 1 / -1;
-  }
-
-  .auth-form input {
-    width: 100%;
   }
 }
 
@@ -510,6 +489,106 @@ body {
   flex: 0 0 auto;
   font-size: 0.72rem;
   margin: 0;
+}
+
+/* ── 로그인 / 회원가입 창 ─────────────────────────────────────────────── */
+.auth-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(3,7,18,0.72);
+  backdrop-filter: blur(8px);
+}
+
+.auth-modal-overlay.active {
+  display: flex;
+}
+
+.auth-modal {
+  width: min(360px, 100%);
+  background: var(--bg-card);
+  border: 1px solid rgba(108,99,255,0.34);
+  border-radius: 12px;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.5);
+  padding: 18px;
+}
+
+.auth-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.auth-modal h2 {
+  color: var(--text);
+  font-size: 1.1rem;
+}
+
+.auth-modal-close {
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(148,163,184,0.3);
+  border-radius: 8px;
+  background: rgba(15,23,42,0.8);
+  color: var(--text-sub);
+  cursor: pointer;
+}
+
+.auth-modal label {
+  display: block;
+  margin: 12px 0 6px;
+  color: var(--text-sub);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.auth-modal input {
+  width: 100%;
+  height: 42px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(148,163,184,0.24);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 0.9rem;
+  padding: 0 12px;
+  outline: none;
+}
+
+.auth-modal input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(108,99,255,0.16);
+}
+
+.auth-modal .btn {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.auth-modal-message {
+  min-height: 18px;
+  margin: 10px 0 4px;
+  color: var(--text-sub);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.auth-modal-message[data-type="warn"] { color: var(--yellow); }
+.auth-modal-message[data-type="error"] { color: var(--red); }
+
+.auth-link-btn {
+  width: 100%;
+  margin-top: 10px;
+  border: none;
+  background: transparent;
+  color: var(--cyan);
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
 /* ── 웹캠 패널 ────────────────────────────────────────────────────────── */
