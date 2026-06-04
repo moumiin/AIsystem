@@ -12,9 +12,9 @@
 import os
 import sys
 import json
-from typing import List
+from typing import List, Optional
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -23,7 +23,9 @@ import uvicorn
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(BASE_DIR, "frontend", "static")
 DATASETS_DIR = os.path.join(BASE_DIR, "datasets")
+DB_PATH = os.environ.get("APP_DB_PATH", os.path.join(BASE_DIR, "app_data.sqlite3"))
 
+from auth_store import AuthStore
 from jamo_db import find_jamo, JAMO_DB
 from jamo_ai import add_sample, load_model, predict as predict_jamo, train_model
 try:
@@ -39,6 +41,7 @@ app = FastAPI(title="수어 학습 서비스")
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 if os.path.isdir(DATASETS_DIR):
     app.mount("/datasets", StaticFiles(directory=DATASETS_DIR), name="datasets")
+auth_store = AuthStore(DB_PATH)
 
 
 LOCAL_INDEX_PATH = os.path.join(BASE_DIR, "local_learning_keypoint_index.json")
@@ -123,6 +126,44 @@ class CoachingFeedbackRequest(BaseModel):
     required_hands: int = 1
     detected_hands: int = 0
 
+
+class AuthRequest(BaseModel):
+    username: str
+    password: str
+    display_name: Optional[str] = None
+
+
+class PracticeRecordRequest(BaseModel):
+    sign_id: str
+    sign_name: str
+    category: str = ""
+    score: float
+    success: bool = False
+    feedback: str = ""
+    duration_ms: int = 0
+    frame_count: int = 0
+
+
+def _token_from_header(authorization: Optional[str] = Header(default=None)):
+    if not authorization:
+        raise HTTPException(status_code=401, detail="로그인이 필요해요.")
+    scheme, _, token = authorization.partition(" ")
+    if scheme.lower() != "bearer" or not token:
+        raise HTTPException(status_code=401, detail="로그인 정보가 올바르지 않아요.")
+    return token
+
+
+def current_user(token: str = Depends(_token_from_header)):
+    user = auth_store.user_from_token(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="로그인이 만료됐어요. 다시 로그인해주세요.")
+    return user
+
+
+def _auth_response(user):
+    token = auth_store.create_session(user["id"])
+    return {"status": "ok", "token": token, "user": user}
+
 NUMBER_KOR = {
     '0':'영','1':'일','2':'이','3':'삼','4':'사',
     '5':'오','6':'육','7':'칠','8':'팔','9':'구',
@@ -135,6 +176,75 @@ def _jamo_video_url(key: str):
     if os.path.exists(video_path):
         return f"/datasets/output_video/{key}/{key}_1.mp4"
     return None
+
+
+@app.post("/api/auth/register")
+def register(req: AuthRequest):
+    username = req.username.strip()
+    password = req.password.strip()
+    if len(username) < 3:
+        raise HTTPException(status_code=400, detail="아이디는 3글자 이상 입력해주세요.")
+    if len(password) < 4:
+        raise HTTPException(status_code=400, detail="비밀번호는 4글자 이상 입력해주세요.")
+    try:
+        user = auth_store.create_user(username, password, req.display_name)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return _auth_response(user)
+
+
+@app.post("/api/auth/login")
+def login(req: AuthRequest):
+    try:
+        user = auth_store.authenticate(req.username, req.password)
+    except ValueError as exc:
+        raise HTTPException(status_code=401, detail=str(exc)) from exc
+    return _auth_response(user)
+
+
+@app.get("/api/auth/me")
+def me(user=Depends(current_user)):
+    return {"status": "ok", "user": user}
+
+
+@app.post("/api/auth/logout")
+def logout(token: str = Depends(_token_from_header)):
+    auth_store.delete_session(token)
+    return {"status": "ok"}
+
+
+@app.post("/api/records")
+def save_practice_record(req: PracticeRecordRequest, user=Depends(current_user)):
+    if not req.sign_id.strip() or not req.sign_name.strip():
+        raise HTTPException(status_code=400, detail="수어 정보가 부족해요.")
+    score = max(0.0, min(100.0, float(req.score or 0)))
+    record = auth_store.add_record(user["id"], {
+        "sign_id": req.sign_id.strip(),
+        "sign_name": req.sign_name.strip(),
+        "category": req.category.strip(),
+        "score": score,
+        "success": req.success,
+        "feedback": req.feedback.strip(),
+        "duration_ms": req.duration_ms,
+        "frame_count": req.frame_count,
+    })
+    return {"status": "ok", "record": record}
+
+
+@app.get("/api/records")
+def get_practice_records(limit: int = 30, user=Depends(current_user)):
+    return {
+        "status": "ok",
+        "records": auth_store.list_records(user["id"], limit),
+    }
+
+
+@app.get("/api/records/summary")
+def get_practice_summary(user=Depends(current_user)):
+    return {
+        "status": "ok",
+        "summary": auth_store.summary(user["id"]),
+    }
 
 @app.post("/api/sign-search")
 async def sign_search(req: SearchRequest):

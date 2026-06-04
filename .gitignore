@@ -4,6 +4,8 @@ __pycache__/
 *.log
 
 hand_sign/datasets/
+hand_sign/*.sqlite3
+hand_sign/*.sqlite3-*
 hand_sign/frontend/react/node_modules/
 hand_sign/frontend/react/dist/
 hand_sign/__pycache__/

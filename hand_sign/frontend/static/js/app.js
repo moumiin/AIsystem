@@ -1567,12 +1567,18 @@ class SignLanguageApp {
     if (!this.currentSign || this.dynamicAttemptBuffer.length === 0) return false;
 
     const sign = this.currentSign;
+    const attemptFrames = this.dynamicAttemptBuffer.slice();
     const result = this._evaluateGestureAttempt(sign, requiredHands);
     const bestFrame = result.bestFrame;
+    result.frameCount = attemptFrames.length;
+    result.durationMs = attemptFrames.length > 1
+      ? Math.round(attemptFrames[attemptFrames.length - 1].ts - attemptFrames[0].ts)
+      : 0;
 
     this._resetGestureRecording();
     this._updateScoreUI(result.score);
     this._lastGestureResult = result;
+    window.authManager?.saveRecord(sign, result);
 
     if (bestFrame?.perFinger) {
       this._updateFingerDots(bestFrame.perFinger);
@@ -1803,6 +1809,17 @@ class SignLanguageApp {
         passed ? '좋아요. 손모양이 시범과 잘 맞고 있어요.' : advice,
         '지문자와 지숫자는 손을 치워서 종료하지 않아도 바로 채점됩니다.',
       ].join('<br>'));
+
+      if (passed && this.successFrames >= this.SUCCESS_FRAMES) {
+        window.authManager?.saveRecord(sign, {
+          score: smoothScore,
+          ok: true,
+          feedback: '정적 손모양을 성공 기준 이상으로 유지했어요.',
+          frameCount: this.successFrames,
+          durationMs: Math.round(this.successFrames * 33),
+        });
+        this._triggerSuccess();
+      }
       return;
     }
 

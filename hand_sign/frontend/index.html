@@ -17,7 +17,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>수어 공부!</title>
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="/static/css/style.css?v=7">
+  <link rel="stylesheet" href="/static/css/style.css?v=8">
   <style>
     .category-tabs {
       display: flex;
@@ -228,6 +228,15 @@
   <header class="app-header">
     <h1>수어 공부!</h1>
     <div class="header-sub">AI 수어 교육 서비스</div>
+    <form class="auth-form" id="auth-form">
+      <span class="auth-user" id="auth-user">로그인 필요</span>
+      <input id="auth-username" type="text" autocomplete="username" placeholder="아이디">
+      <input id="auth-password" type="password" autocomplete="current-password" placeholder="비밀번호">
+      <button id="auth-login-btn" type="submit">로그인</button>
+      <button id="auth-register-btn" type="button">회원가입</button>
+      <button id="auth-logout-btn" type="button">로그아웃</button>
+      <span class="auth-status" id="auth-status"></span>
+    </form>
     <button class="admin-toggle" id="admin-toggle" type="button">관리자</button>
   </header>
 
@@ -302,6 +311,13 @@
         <div class="live-feedback" id="live-feedback">
           <strong>실시간 피드백</strong>
           <p>손이 보이면 기록이 시작되고, 손을 치우면 그동안의 동작으로 점수와 피드백이 표시됩니다.</p>
+        </div>
+        <div class="history-card">
+          <strong>내 학습 기록</strong>
+          <p id="history-summary">로그인하면 학습 기록이 저장됩니다.</p>
+          <ul id="history-list">
+            <li>아직 표시할 기록이 없어요.</li>
+          </ul>
         </div>
       </aside>
 
@@ -389,7 +405,8 @@
   <script src="/static/js/feedback-coach.js?v=1"></script>
   <script src="/static/js/hand-tracker.js?v=8"></script>
   <script src="/static/js/sign-search.js?v=10"></script>
-  <script src="/static/js/app.js?v=86"></script>
+  <script src="/static/js/auth.js?v=1"></script>
+  <script src="/static/js/app.js?v=87"></script>
   <script src="/static/js/admin-mode.js?v=3"></script>
 </body>
 </html>
