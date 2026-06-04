@@ -21,6 +21,8 @@ from pydantic import BaseModel
 import uvicorn
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(BASE_DIR, "frontend", "static")
+DATASETS_DIR = os.path.join(BASE_DIR, "datasets")
 
 from jamo_db import find_jamo, JAMO_DB
 from jamo_ai import add_sample, load_model, predict as predict_jamo, train_model
@@ -34,8 +36,9 @@ except ImportError:
     aihub_available   = lambda: False
 
 app = FastAPI(title="수어 학습 서비스")
-app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "frontend", "static")), name="static")
-app.mount("/datasets", StaticFiles(directory=os.path.join(BASE_DIR, "datasets")), name="datasets")
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+if os.path.isdir(DATASETS_DIR):
+    app.mount("/datasets", StaticFiles(directory=DATASETS_DIR), name="datasets")
 
 
 LOCAL_INDEX_PATH = os.path.join(BASE_DIR, "local_learning_keypoint_index.json")
@@ -128,7 +131,7 @@ NUMBER_KOR = {
 }
 
 def _jamo_video_url(key: str):
-    video_path = os.path.join(BASE_DIR, "datasets", "output_video", key, f"{key}_1.mp4")
+    video_path = os.path.join(DATASETS_DIR, "output_video", key, f"{key}_1.mp4")
     if os.path.exists(video_path):
         return f"/datasets/output_video/{key}/{key}_1.mp4"
     return None
