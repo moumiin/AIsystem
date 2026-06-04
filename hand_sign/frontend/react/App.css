@@ -1,0 +1,123 @@
+body {
+  margin: 0;
+  background: #0f172a;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+.learning-page {
+  min-height: 100vh;
+  text-align: center;
+  padding: 24px 16px 56px;
+}
+
+.learning-page h1 {
+  margin: 0 0 20px;
+}
+
+.controls {
+  margin: 20px auto;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.controls select,
+.controls button {
+  font-size: 18px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  margin: 4px;
+}
+
+.controls button {
+  cursor: pointer;
+  background: #38bdf8;
+  color: #0f172a;
+  font-weight: bold;
+}
+
+.viewer-grid {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.panel {
+  background: #1e293b;
+  padding: 16px;
+  border-radius: 14px;
+}
+
+.panel h2 {
+  margin: 0 0 14px;
+  font-size: 22px;
+}
+
+.panel canvas,
+.panel video {
+  width: 520px;
+  height: 390px;
+  max-width: min(520px, calc(100vw - 64px));
+  background: black;
+  border-radius: 12px;
+  display: block;
+}
+
+.panel video {
+  display: none;
+}
+
+.status-card {
+  width: min(420px, calc(100vw - 40px));
+  margin: 24px auto 0;
+  padding: 24px 30px;
+  background: rgba(15, 23, 42, 0.92);
+  border: 2px solid #0f766e;
+  border-radius: 18px;
+  box-shadow: 0 0 25px rgba(45, 212, 191, 0.35);
+}
+
+.word {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.score {
+  margin-top: 10px;
+  font-size: 22px;
+  color: #38bdf8;
+}
+
+.feedback {
+  margin-top: 8px;
+  font-size: 16px;
+  color: #cbd5e1;
+  white-space: pre-line;
+}
+
+@media (max-width: 640px) {
+  .learning-page {
+    padding-inline: 10px;
+  }
+
+  .controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .controls select,
+  .controls button {
+    width: 100%;
+    margin: 0;
+  }
+
+  .panel {
+    width: 100%;
+    padding: 12px;
+  }
+}

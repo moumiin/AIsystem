@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.DS_Store
+*.log
+frontend/react/node_modules/
+frontend/react/dist/
