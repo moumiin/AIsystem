@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: hand-sign-learning
+    env: python
+    rootDir: hand_sign
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    autoDeploy: true
