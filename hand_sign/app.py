@@ -14,6 +14,12 @@ import sys
 import json
 from typing import List, Optional
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 from fastapi import Depends, FastAPI, Header, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -44,6 +50,14 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 if os.path.isdir(DATASETS_DIR):
     app.mount("/datasets", StaticFiles(directory=DATASETS_DIR), name="datasets")
 auth_store = create_auth_store(DB_PATH, MONGODB_URI, MONGODB_DB)
+
+# 관리자 계정 자동 생성
+_ADMIN_ID = "admin"
+_ADMIN_PW = "ai2026"
+try:
+    auth_store.create_user(_ADMIN_ID, _ADMIN_PW, "관리자")
+except Exception:
+    pass  # 이미 존재하면 무시
 
 
 LOCAL_INDEX_PATH = os.path.join(BASE_DIR, "local_learning_keypoint_index.json")
@@ -129,6 +143,23 @@ class CoachingFeedbackRequest(BaseModel):
     detected_hands: int = 0
 
 
+class GeminiFeedbackRequest(BaseModel):
+    sign_name: str = ""
+    score: float = 0
+    pose_score: float = 0
+    trajectory_score: float = 0
+    movement_score: float = 0
+    weak_fingers: List[str] = []
+    is_static: bool = False
+
+
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin1234")
+
+
+class AdminVerifyRequest(BaseModel):
+    password: str
+
+
 class AuthRequest(BaseModel):
     username: str
     password: str
@@ -178,6 +209,14 @@ def _jamo_video_url(key: str):
     if os.path.exists(video_path):
         return f"/datasets/output_video/{key}/{key}_1.mp4"
     return None
+
+
+@app.post("/api/admin/verify")
+def admin_verify(req: AdminVerifyRequest):
+    import hmac
+    if not hmac.compare_digest(req.password, ADMIN_PASSWORD):
+        raise HTTPException(status_code=401, detail="비밀번호가 틀렸습니다.")
+    return {"ok": True}
 
 
 @app.post("/api/auth/register")
@@ -488,6 +527,75 @@ def coaching_feedback(req: CoachingFeedbackRequest):
         lines.append(f"잘 맞는 부분: {', '.join(strong)}")
 
     return {"status": "ok", "feedback": " ".join(lines[:4])}
+
+
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash").strip()
+
+
+def _rule_based_part_comment(req: "GeminiFeedbackRequest") -> str:
+    """Gemini 미사용/실패 시 성분 점수 기반 규칙 코멘트."""
+    parts = [("손모양", req.pose_score)]
+    if not req.is_static:
+        parts.append(("이동경로", req.trajectory_score))
+        parts.append(("움직임", req.movement_score))
+    lowest_name, lowest_score = min(parts, key=lambda p: p[1])
+
+    tips = {
+        "손모양": "손가락 모양과 손바닥 방향을 시범과 더 가깝게 맞춰보세요.",
+        "이동경로": "손이 지나가는 경로를 시범과 같은 방향으로 그려보세요.",
+        "움직임": "동작을 더 또렷하고 크게, 시작점에서 끝점까지 이어서 해보세요.",
+    }
+    weak_ko = [FINGER_KO.get(f, f) for f in req.weak_fingers[:2]]
+    base = f'"{req.sign_name or "이 수어"}"에서 가장 아쉬운 부분은 {lowest_name}({int(lowest_score)}점)이에요. {tips.get(lowest_name, "")}'
+    if weak_ko:
+        base += f" 특히 {', '.join(weak_ko)} 위치를 신경 써보세요."
+    return base
+
+
+async def _call_gemini(req: "GeminiFeedbackRequest") -> Optional[str]:
+    if not GEMINI_API_KEY:
+        return None
+    import httpx
+
+    parts_desc = f"손모양 {int(req.pose_score)}점"
+    if not req.is_static:
+        parts_desc += f", 이동경로 {int(req.trajectory_score)}점, 움직임 {int(req.movement_score)}점"
+    weak_ko = [FINGER_KO.get(f, f) for f in req.weak_fingers[:3]]
+    weak_desc = f" 약한 손가락: {', '.join(weak_ko)}." if weak_ko else ""
+
+    prompt = (
+        "당신은 친근한 한국 수어 교육 코치입니다. "
+        f'학습자가 "{req.sign_name}" 수어를 따라했고 총점 {int(req.score)}점입니다. '
+        f"성분별 점수는 {parts_desc}입니다.{weak_desc} "
+        "가장 점수가 낮은 부분을 콕 집어, 어떻게 개선하면 좋을지 한국어로 1~2문장만 따뜻하게 코칭하세요. "
+        "점수 숫자를 나열하지 말고 자연스럽게 말하세요."
+    )
+
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
+    try:
+        async with httpx.AsyncClient(timeout=6.0) as client:
+            resp = await client.post(
+                url,
+                params={"key": GEMINI_API_KEY},
+                json={"contents": [{"parts": [{"text": prompt}]}]},
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            return data["candidates"][0]["content"]["parts"][0]["text"].strip()
+    except Exception as exc:
+        print(f"[Gemini] 호출 실패 → 규칙기반 fallback: {exc}")
+        return None
+
+
+@app.post("/api/gemini-feedback")
+async def gemini_feedback(req: GeminiFeedbackRequest):
+    comment = await _call_gemini(req)
+    source = "gemini"
+    if not comment:
+        comment = _rule_based_part_comment(req)
+        source = "rule"
+    return {"status": "ok", "comment": comment, "source": source}
 
 
 @app.post("/api/jamo-ai/predict")

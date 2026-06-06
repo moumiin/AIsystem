@@ -55,12 +55,13 @@ const LM_WEIGHTS = [
   0.6, 0.8, 1.1, 1.8,        // 17-20 PINKY
 ];
 
+// 엄지·검지는 변별력이 높아 타이트하게, 약지·새끼는 추적 노이즈가 커서 완화
 const FINGER_SCORE_TOLERANCE = {
-  thumb: 1.5,
-  index: 1.5,
+  thumb: 1.3,
+  index: 1.3,
   middle: 1.5,
-  ring: 1.5,
-  pinky: 1.5,
+  ring: 1.6,
+  pinky: 1.6,
 };
 
 const WEAK_FINGER_THRESHOLD = {
@@ -99,7 +100,7 @@ function computeScoreBreakdown(userNorm, refPose, options = {}) {
     return { score: 0, poseScore: 0, directionScore: 0, fingerScore: 0, tipScore: 0, weakFingerCount: 5 };
   }
 
-  const rotations = options.tryRotation ? [-28, -16, -8, 0, 8, 16, 28] : [0];
+  const rotations = options.tryRotation ? [-24, -12, 0, 12, 24] : [0];
   let best = null;
 
   for (const deg of rotations) {
@@ -110,14 +111,16 @@ function computeScoreBreakdown(userNorm, refPose, options = {}) {
     const fingerScore = Object.values(fingerScores).reduce((sum, value) => sum + value, 0) / 5 * 100;
     const tipScore = computeTipPositionScore(rotated, refPose);
     const weakFingerCount = weakFingerCountFromScores(fingerScores);
-    let score = poseScore * 0.42 + directionScore * 0.38 + fingerScore * 0.12 + tipScore * 0.08;
+    // 방향(각도)이 위치보다 스케일·깊이에 강건하므로 비중을 더 높임
+    let score = poseScore * 0.36 + directionScore * 0.44 + fingerScore * 0.12 + tipScore * 0.08;
 
     if (options.strict) {
-      if (poseScore < 100) score = Math.min(score, 100);
-      if (directionScore < 55) score = Math.min(score, 100);
-      if (fingerScore < 100) score = Math.min(score, 100);
-      if (weakFingerCount >= 2) score = Math.min(score, 100);
-      else if (weakFingerCount === 1) score = Math.min(score, 68);
+      // 위치·방향·손가락 중 하나라도 명백히 틀리면 고득점 차단 (거짓 통과 방지)
+      if (poseScore < 55) score = Math.min(score, 60);
+      if (directionScore < 55) score = Math.min(score, 62);
+      if (fingerScore < 55) score = Math.min(score, 64);
+      if (weakFingerCount >= 2) score = Math.min(score, 55);
+      else if (weakFingerCount === 1) score = Math.min(score, 72);
     }
 
     score = Math.round(Math.max(0, Math.min(100, score)));
@@ -130,28 +133,6 @@ function computeScoreBreakdown(userNorm, refPose, options = {}) {
 
 function computeScore(userNorm, refPose, options = {}) {
   return computeScoreBreakdown(userNorm, refPose, options)?.score || 0;
-}
-
-function computeStrictScore(userNorm, refPose) {
-  if (!userNorm || !refPose) return 0;
-
-  const poseScore = computePoseDistanceScore(userNorm, refPose);
-  const directionScore = computeDirectionScore(userNorm, refPose);
-  const fingerScores = computePerFingerScores(userNorm, refPose);
-  const fingerScore = Object.values(fingerScores).reduce((sum, value) => sum + value, 0) / 5 * 100;
-  const tipScore = computeTipPositionScore(userNorm, refPose);
-  let score = poseScore * 0.40 + directionScore * 0.25 + fingerScore * 0.20 + tipScore * 0.15;
-
-  const weakFingerCount = weakFingerCountFromScores(fingerScores);
-  if (poseScore < 48) score = Math.min(score, 42);
-  if (poseScore < 62) score = Math.min(score, 62);
-  if (directionScore < 62) score = Math.min(score, 58);
-  if (fingerScore < 62) score = Math.min(score, 58);
-  if (tipScore < 58) score = Math.min(score, 60);
-  if (weakFingerCount >= 2) score = Math.min(score, 55);
-  else if (weakFingerCount === 1) score = Math.min(score, 72);
-
-  return Math.round(Math.max(0, Math.min(100, score)));
 }
 
 function computePoseDistanceScore(userNorm, refPose) {

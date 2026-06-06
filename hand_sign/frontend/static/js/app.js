@@ -259,7 +259,15 @@ class SignLanguageApp {
     });
 
     document.getElementById('start-camera-btn').addEventListener('click', () => {
-      this._startCamera();
+      if (this.tracker?.isRunning) {
+        this._stopCamera();
+      } else {
+        this._startCamera();
+      }
+    });
+
+    document.getElementById('modal-ai-btn')?.addEventListener('click', () => {
+      this._requestAiComment();
     });
 
     document.getElementById('modal-next-btn').addEventListener('click', () => {
@@ -1338,13 +1346,36 @@ class SignLanguageApp {
     const user = this._normalizeTrajectory(this._resamplePoints(userCenters, length));
     const ref = this._normalizeTrajectory(this._resamplePoints(refCenters, length));
 
-    let total = 0;
-    for (let i = 0; i < length; i++) {
-      total += Math.hypot(user[i][0] - ref[i][0], user[i][1] - ref[i][1]);
+    // DTW-lite: 단조 정합으로 위상·속도 차이를 흡수한 평균 거리
+    const avg = this._dtwAverageDistance(user, ref);
+    return Math.round(Math.max(0, Math.min(100, (1 - Math.min(1, avg / 1.2)) * 100)));
+  }
+
+  /**
+   * 두 2D 궤적의 DTW(동적 시간 정합) 정규화 평균 거리.
+   * 사용자가 시범보다 빠르거나 느려도 단조 대응으로 정합해 과벌점을 줄인다.
+   */
+  _dtwAverageDistance(a, b) {
+    const n = a.length;
+    const m = b.length;
+    if (n === 0 || m === 0) return 1;
+
+    const INF = Infinity;
+    let prev = new Array(m + 1).fill(INF);
+    let curr = new Array(m + 1).fill(INF);
+    prev[0] = 0;
+
+    for (let i = 1; i <= n; i++) {
+      curr[0] = INF;
+      for (let j = 1; j <= m; j++) {
+        const cost = Math.hypot(a[i - 1][0] - b[j - 1][0], a[i - 1][1] - b[j - 1][1]);
+        curr[j] = cost + Math.min(prev[j], curr[j - 1], prev[j - 1]);
+      }
+      [prev, curr] = [curr, prev];
     }
 
-    const avg = total / length;
-    return Math.round(Math.max(0, Math.min(100, (1 - Math.min(1, avg / 1.2)) * 100)));
+    // 정합 경로 길이로 정규화 (경로 길이는 대략 n+m 스텝)
+    return prev[m] / (n + m);
   }
 
   _directionLabel(from, to) {
@@ -1535,9 +1566,10 @@ class SignLanguageApp {
     if (activeRatio < 0.15) movementScore *= 0.75;
 
     const refMoves = refTrajectory.length >= 4;
-    let poseW = 0.55;
-    let moveW = refMoves ? 0.20 : 0.30;
-    let trajW = refMoves ? 0.25 : 0.15;
+    // DTW 정합으로 궤적 점수가 속도차에 강건해졌으므로 동적 단어는 궤적 비중을 소폭 상향
+    let poseW = 0.52;
+    let moveW = refMoves ? 0.18 : 0.30;
+    let trajW = refMoves ? 0.30 : 0.18;
     if (format === 'jamo') {
       poseW = 0.72;
       moveW = 0.13;
@@ -1551,7 +1583,9 @@ class SignLanguageApp {
 
     if (!enoughMovement && format !== 'jamo') score = Math.min(score, 48);
     if (handOkRatio < 0.8) score = Math.min(score, 52);
-    if (badFrameRatio >= 0.35) score = Math.min(score, 60);
+    // 손이 잠깐 빠진 정도(< 절반)는 과벌점하지 않고, 동작 절반 이상이 기준과 크게 다를 때만 캡
+    if (badFrameRatio >= 0.5) score = Math.min(score, 60);
+    else if (badFrameRatio >= 0.35) score = Math.min(score, 70);
     score = Math.max(0, Math.min(100, score));
 
     const bestFrame = this._pickBestGestureFrame(frames);
@@ -1604,6 +1638,8 @@ class SignLanguageApp {
       trajectoryScore,
       movementScore,
       handOkRatio,
+      perFinger: bestFrame?.perFinger || null,
+      format,
     };
   }
 
@@ -1622,7 +1658,6 @@ class SignLanguageApp {
     this._resetGestureRecording();
     this._updateScoreUI(result.score);
     this._lastGestureResult = result;
-    window.authManager?.saveRecord(sign, result);
 
     if (bestFrame?.perFinger) {
       this._updateFingerDots(bestFrame.perFinger);
@@ -1650,6 +1685,7 @@ class SignLanguageApp {
     } else {
       this._setStatus(`💡 ${result.message}`);
       this._setLiveFeedback(result.feedback || result.message);
+      this._showResultModal(result, false);
     }
 
     return true;
@@ -1657,6 +1693,24 @@ class SignLanguageApp {
 
   _finishDynamicAttempt(requiredHands) {
     return this._finishGestureAttempt(requiredHands);
+  }
+
+  _stopCamera() {
+    if (!this.tracker?.isRunning) return;
+    this.tracker.stop?.();
+    this.tracker = null;
+    this.state = 'idle';
+    this._setTrackingStatus(false);
+    const btn = document.getElementById('start-camera-btn');
+    btn.textContent = '📷 카메라 시작';
+    btn.disabled = false;
+    const placeholder = document.getElementById('webcam-placeholder');
+    if (placeholder) placeholder.style.display = 'flex';
+    const videoEl = document.getElementById('webcam');
+    if (videoEl) { videoEl.srcObject = null; }
+    this._setStatus('카메라를 껐습니다.');
+    this._updateScoreUI(0);
+    this._updateFingerDots(null);
   }
 
   async _startCamera() {
@@ -1675,7 +1729,8 @@ class SignLanguageApp {
 
       document.getElementById('webcam-placeholder').style.display = 'none';
       this._setTrackingStatus(true);
-      btn.textContent = '✅ 카메라 실행 중';
+      btn.textContent = '📷 카메라 끄기';
+      btn.disabled = false;
 
       if (this.currentSign) {
         this.state = 'practicing';
@@ -2095,11 +2150,26 @@ class SignLanguageApp {
   _triggerSuccess() {
     if (this.state === 'success') return;
     this.state = 'success';
+    this._showResultModal(this._lastGestureResult || { score: this.currentScore || this.bestScore || 0 }, true);
+  }
 
-    document.getElementById('modal-sign-name').textContent  = this.currentSign.name;
-    const finalScore = this.currentScore || this.bestScore || 0;
-    this.bestScore = Math.max(this.bestScore || 0, finalScore);
+  _showResultModal(result, isSuccess) {
+    const sign = this.currentSign;
+    const finalScore = Math.max(this.currentScore || 0, this.bestScore || 0, result?.score || 0);
+    this.bestScore = finalScore;
+
+    document.getElementById('modal-icon').textContent   = isSuccess ? '🎉' : '💪';
+    document.getElementById('modal-title').textContent  = isSuccess ? '완벽해요!' : '한 번 더 해봐요!';
+    document.getElementById('modal-sign-name').textContent = sign?.name || '';
     document.getElementById('modal-best-score').textContent = finalScore;
+
+    const saveNote = document.getElementById('modal-save-note');
+    if (window.authManager?.token) {
+      saveNote.textContent = '학습 기록에 저장됩니다.';
+      window.authManager.saveRecord(sign, result || { score: finalScore, ok: isSuccess });
+    } else {
+      saveNote.textContent = '로그인하면 학습 기록이 저장됩니다.';
+    }
 
     const seq = this.signSearch?._sequence;
     const isSeq = this.isSearchMode && seq?.length > 1;
@@ -2120,7 +2190,93 @@ class SignLanguageApp {
 
     document.getElementById('modal-retry-btn').textContent = retryBtnText;
     document.getElementById('modal-next-btn').textContent  = nextBtnText;
+
+    this._renderBreakdown(result, sign);
+    this._resetAiComment(result, sign, finalScore);
+
     document.getElementById('success-modal').style.display = 'flex';
+  }
+
+  _renderBreakdown(result, sign) {
+    const isStatic = !result || result.format === 'jamo' || this._isStaticHandSign(sign);
+    const parts = [
+      { key: 'pose', score: Math.round(result?.poseScore ?? this.currentScore ?? 0), staticOnly: false },
+      { key: 'traj', score: Math.round(result?.trajectoryScore ?? 0), staticOnly: false, dynamicOnly: true },
+      { key: 'move', score: Math.round(result?.movementScore ?? 0), staticOnly: false, dynamicOnly: true },
+    ];
+
+    const colorOf = (s) => (s >= 75 ? '#22c55e' : s >= 45 ? '#f59e0b' : '#ef4444');
+    let lowest = null;
+
+    parts.forEach(part => {
+      const row = document.querySelector(`.breakdown-row[data-part="${part.key}"]`);
+      if (!row) return;
+      // 정적 수어는 이동/움직임 바 숨김
+      const hide = isStatic && part.dynamicOnly;
+      row.classList.toggle('hidden', hide);
+      row.classList.remove('lowest');
+      if (hide) return;
+
+      const fill = document.getElementById(`bd-${part.key}-fill`);
+      const scoreEl = document.getElementById(`bd-${part.key}-score`);
+      if (fill) { fill.style.width = `${part.score}%`; fill.style.background = colorOf(part.score); }
+      if (scoreEl) scoreEl.textContent = part.score;
+
+      if (!lowest || part.score < lowest.score) lowest = { row, score: part.score };
+    });
+
+    // 가장 낮은 성분 강조 (점수가 낮을 때만)
+    if (lowest && lowest.score < 75) lowest.row.classList.add('lowest');
+  }
+
+  _resetAiComment(result, sign, finalScore) {
+    this._lastModalResult = { result, sign, finalScore };
+    const commentEl = document.getElementById('modal-ai-comment');
+    const btn = document.getElementById('modal-ai-btn');
+    if (commentEl) { commentEl.textContent = ''; commentEl.classList.remove('has-text'); }
+    if (btn) { btn.disabled = false; btn.textContent = '🤖 AI 코치 코멘트 받기'; }
+  }
+
+  async _requestAiComment() {
+    const ctx = this._lastModalResult;
+    if (!ctx) return;
+    const { result, sign, finalScore } = ctx;
+    const btn = document.getElementById('modal-ai-btn');
+    const commentEl = document.getElementById('modal-ai-comment');
+    if (btn) { btn.disabled = true; btn.textContent = '🤖 코멘트 생성 중...'; }
+
+    const weakFingers = Object.entries(result?.perFinger || {})
+      .filter(([, v]) => v < 0.58)
+      .sort((a, b) => a[1] - b[1])
+      .map(([f]) => f);
+
+    try {
+      const res = await fetch('/api/gemini-feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sign_name: sign?.name || '',
+          score: finalScore,
+          pose_score: Math.round(result?.poseScore ?? finalScore),
+          trajectory_score: Math.round(result?.trajectoryScore ?? 0),
+          movement_score: Math.round(result?.movementScore ?? 0),
+          weak_fingers: weakFingers,
+          is_static: !result || result.format === 'jamo' || this._isStaticHandSign(sign),
+        }),
+      });
+      const data = await res.json();
+      if (commentEl) {
+        commentEl.textContent = data.comment || '코멘트를 받지 못했어요.';
+        commentEl.classList.add('has-text');
+      }
+    } catch (e) {
+      if (commentEl) {
+        commentEl.textContent = 'AI 코멘트를 불러오지 못했어요. 잠시 후 다시 시도해주세요.';
+        commentEl.classList.add('has-text');
+      }
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = '🤖 다시 코멘트 받기'; }
+    }
   }
 
   _closeModal() {

@@ -23,64 +23,16 @@ const CATEGORY_META = {
     "emoji": "🔢"
   },
   "cat01": {
-    "label": "인사·기본표현",
-    "emoji": "💬"
-  },
-  "cat02": {
-    "label": "숫자·날짜·시간",
-    "emoji": "🗓️"
-  },
-  "cat03": {
-    "label": "가족·사람",
-    "emoji": "👨‍👩‍👧"
-  },
-  "cat04": {
-    "label": "신체·건강",
-    "emoji": "🏥"
-  },
-  "cat05": {
-    "label": "감정·성격",
-    "emoji": "😊"
-  },
-  "cat06": {
-    "label": "음식·음료",
-    "emoji": "🍚"
-  },
-  "cat07": {
-    "label": "일상생활·집",
-    "emoji": "🏠"
-  },
-  "cat08": {
-    "label": "옷·외모",
-    "emoji": "👕"
+    "label": "인사",
+    "emoji": "👋"
   },
   "cat09": {
-    "label": "학교·교육",
+    "label": "학교",
     "emoji": "📚"
   },
-  "cat10": {
-    "label": "직업·일",
-    "emoji": "💼"
-  },
   "cat11": {
-    "label": "교통·장소",
-    "emoji": "📍"
-  },
-  "cat12": {
-    "label": "자연·날씨",
-    "emoji": "🌤️"
-  },
-  "cat13": {
-    "label": "색깔·수량",
-    "emoji": "🎨"
-  },
-  "cat14": {
-    "label": "스포츠·취미",
-    "emoji": "⚽"
-  },
-  "cat15": {
-    "label": "사회·감사생활",
-    "emoji": "🎉"
+    "label": "교통",
+    "emoji": "🚌"
   }
 };
 
@@ -164,6 +116,78 @@ const SIGNS = [
     "emoji": "🔟",
     "aihubWord": "10",
     "hands": 1
+  },
+  {
+    "id": "greeting_001",
+    "category": "cat01",
+    "name": "안녕하세요",
+    "emoji": "👋",
+    "aihubWord": "안녕하세요",
+    "hint": "손을 들어 인사하는 동작을 해보세요",
+    "hands": 1
+  },
+  {
+    "id": "greeting_002",
+    "category": "cat01",
+    "name": "감사합니다",
+    "emoji": "🙏",
+    "aihubWord": "감사합니다",
+    "hint": "두 손을 모아 고마움을 표현해보세요",
+    "hands": 2
+  },
+  {
+    "id": "greeting_003",
+    "category": "cat01",
+    "name": "고맙습니다",
+    "emoji": "🙏",
+    "aihubWord": "고맙습니다",
+    "hint": "두 손을 모아 고마움을 표현해보세요",
+    "hands": 2
+  },
+  {
+    "id": "greeting_004",
+    "category": "cat01",
+    "name": "반갑습니다",
+    "emoji": "😊",
+    "aihubWord": "반갑습니다",
+    "hint": "만나서 반가운 표정과 함께 동작을 따라해보세요",
+    "hands": 1
+  },
+  {
+    "id": "greeting_005",
+    "category": "cat01",
+    "name": "죄송합니다",
+    "emoji": "😔",
+    "aihubWord": "죄송합니다",
+    "hint": "고개를 숙이며 사과하는 동작을 해보세요",
+    "hands": 2
+  },
+  {
+    "id": "greeting_006",
+    "category": "cat01",
+    "name": "괜찮습니다",
+    "emoji": "👌",
+    "aihubWord": "괜찮다",
+    "hint": "손을 가볍게 흔들며 괜찮다는 동작을 해보세요",
+    "hands": 1
+  },
+  {
+    "id": "greeting_007",
+    "category": "cat01",
+    "name": "안녕히 가세요",
+    "emoji": "👋",
+    "aihubWord": "안녕히가세요",
+    "hint": "손을 흔들며 작별 인사를 해보세요",
+    "hands": 1
+  },
+  {
+    "id": "greeting_008",
+    "category": "cat01",
+    "name": "처음 뵙겠습니다",
+    "emoji": "🤝",
+    "aihubWord": "처음뵙겠습니다",
+    "hint": "두 손을 모아 첫 인사를 해보세요",
+    "hands": 2
   },
   {
     "id": "cat01_001",

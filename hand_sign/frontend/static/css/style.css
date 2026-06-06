@@ -892,13 +892,97 @@ body {
 }
 
 .modal-sign    { font-size: 1rem; color: var(--text); font-weight: 600; margin-bottom: 4px; }
-.modal-score   { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 20px; }
+.modal-score   { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 4px; }
+.modal-save-note { font-size: 0.76rem; color: var(--text-sub); margin-bottom: 16px; min-height: 16px; }
 .modal-score span { color: var(--green); font-weight: 700; font-size: 1rem; }
 
 .modal-btns {
   display: flex;
   gap: 10px;
   justify-content: center;
+}
+
+/* ── 성분별 점수 바 ───────────────────────────────────────────────────── */
+.modal-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 4px 0 16px;
+  text-align: left;
+}
+
+.breakdown-row {
+  display: grid;
+  grid-template-columns: 56px 1fr 34px;
+  align-items: center;
+  gap: 8px;
+}
+
+.breakdown-row.hidden { display: none; }
+
+.breakdown-label {
+  font-size: 0.74rem;
+  color: var(--text-sub);
+  white-space: nowrap;
+}
+
+.breakdown-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: #1e2a3a;
+  overflow: hidden;
+}
+
+.breakdown-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: var(--green);
+  transition: width 0.4s ease, background 0.3s ease;
+}
+
+.breakdown-score {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text);
+  text-align: right;
+}
+
+.breakdown-row.lowest .breakdown-label {
+  color: var(--yellow);
+  font-weight: 700;
+}
+
+.breakdown-row.lowest .breakdown-label::after {
+  content: ' ◀ 개선';
+  font-size: 0.66rem;
+}
+
+/* ── AI 코치 코멘트 ───────────────────────────────────────────────────── */
+.modal-ai-coach {
+  margin-bottom: 14px;
+}
+
+.modal-ai-coach .btn {
+  width: 100%;
+  font-size: 0.8rem;
+}
+
+.modal-ai-comment {
+  margin-top: 8px;
+  padding: 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #c4b5fd;
+  text-align: left;
+}
+
+.modal-ai-comment.has-text {
+  padding: 10px 12px;
+  background: rgba(108,99,255,0.1);
+  border: 1px solid rgba(108,99,255,0.3);
+  border-radius: 8px;
 }
 
 .admin-drawer {
@@ -1017,6 +1101,58 @@ body {
   border-color: var(--cyan);
 }
 
+/* ── 온보딩 모달 ──────────────────────────────────────────────────────── */
+.onboarding-modal {
+  text-align: center;
+  max-width: 380px;
+}
+
+.onboarding-emoji {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+.onboarding-modal h2 {
+  margin-bottom: 8px;
+}
+
+.onboarding-desc {
+  color: var(--text-sub);
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+}
+
+.onboarding-phrase {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--cyan);
+  margin-bottom: 18px;
+  min-height: 24px;
+}
+
+.onboarding-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── 하단 피드백 + 학습기록 행 ────────────────────────────────────────── */
+.bottom-info-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.bottom-info-row .live-feedback {
+  width: auto;
+  margin-top: 0;
+}
+
+.bottom-info-row .history-card {
+  width: auto;
+  margin-top: 0;
+}
+
 /* ── 반응형 ───────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .panels-row {
@@ -1030,5 +1166,9 @@ body {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
+  }
+
+  .bottom-info-row {
+    grid-template-columns: 1fr;
   }
 }

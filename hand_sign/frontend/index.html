@@ -235,7 +235,7 @@
       <button id="auth-logout-btn" type="button">로그아웃</button>
       <span class="auth-status" id="auth-status"></span>
     </div>
-    <button class="admin-toggle" id="admin-toggle" type="button">관리자</button>
+    <button class="admin-toggle" id="admin-toggle" type="button" style="display:none">관리자</button>
   </header>
 
   <main class="app-main">
@@ -304,22 +304,11 @@
         </div>
         <div class="score-label" id="score-label">대기중</div>
         <div class="finger-dots" aria-label="손가락 피드백">
-          <span class="finger-dot" data-finger="thumb" title="엄지">엄</span>
-          <span class="finger-dot" data-finger="index" title="검지">검</span>
-          <span class="finger-dot" data-finger="middle" title="중지">중</span>
-          <span class="finger-dot" data-finger="ring" title="약지">약</span>
-          <span class="finger-dot" data-finger="pinky" title="새끼">새</span>
-        </div>
-        <div class="live-feedback" id="live-feedback">
-          <strong>실시간 피드백</strong>
-          <p>손이 보이면 기록이 시작되고, 손을 치우면 그동안의 동작으로 점수와 피드백이 표시됩니다.</p>
-        </div>
-        <div class="history-card">
-          <strong>내 학습 기록</strong>
-          <p id="history-summary">로그인하면 학습 기록이 저장됩니다.</p>
-          <ul id="history-list">
-            <li>아직 표시할 기록이 없어요.</li>
-          </ul>
+          <span class="finger-dot" data-finger="thumb" aria-label="엄지" title="엄지">엄</span>
+          <span class="finger-dot" data-finger="index" aria-label="검지" title="검지">검</span>
+          <span class="finger-dot" data-finger="middle" aria-label="중지" title="중지">중</span>
+          <span class="finger-dot" data-finger="ring" aria-label="약지" title="약지">약</span>
+          <span class="finger-dot" data-finger="pinky" aria-label="새끼" title="새끼">새</span>
         </div>
       </aside>
 
@@ -345,6 +334,20 @@
       </section>
     </div>
 
+    <div class="bottom-info-row">
+      <div class="live-feedback" id="live-feedback">
+        <strong>실시간 피드백</strong>
+        <p>손이 보이면 기록이 시작되고, 손을 치우면 그동안의 동작으로 점수와 피드백이 표시됩니다.</p>
+      </div>
+      <div class="history-card">
+        <strong>내 학습 기록</strong>
+        <p id="history-summary">로그인하면 학습 기록이 저장됩니다.</p>
+        <ul id="history-list">
+          <li>아직 표시할 기록이 없어요.</li>
+        </ul>
+      </div>
+    </div>
+
     <div class="status-bar">
       <span id="status-message">위 검색창에서 단어를 검색하거나 아래 목록에서 수어를 선택하세요</span>
     </div>
@@ -361,10 +364,35 @@
 
   <div class="modal-overlay" id="success-modal" style="display:none">
     <div class="modal">
-      <div class="modal-icon">🎉</div>
-      <h2>완벽해요!</h2>
+      <div class="modal-icon" id="modal-icon">🎉</div>
+      <h2 id="modal-title">완벽해요!</h2>
       <p class="modal-sign" id="modal-sign-name"></p>
-      <p class="modal-score">성공 점수: <span id="modal-best-score">0</span>점</p>
+      <p class="modal-score" id="modal-score-line">점수: <span id="modal-best-score">0</span>점</p>
+
+      <div class="modal-breakdown" id="modal-breakdown">
+        <div class="breakdown-row" data-part="pose">
+          <span class="breakdown-label">손모양</span>
+          <span class="breakdown-bar"><i class="breakdown-fill" id="bd-pose-fill"></i></span>
+          <span class="breakdown-score" id="bd-pose-score">0</span>
+        </div>
+        <div class="breakdown-row" data-part="traj">
+          <span class="breakdown-label">이동경로</span>
+          <span class="breakdown-bar"><i class="breakdown-fill" id="bd-traj-fill"></i></span>
+          <span class="breakdown-score" id="bd-traj-score">0</span>
+        </div>
+        <div class="breakdown-row" data-part="move">
+          <span class="breakdown-label">움직임</span>
+          <span class="breakdown-bar"><i class="breakdown-fill" id="bd-move-fill"></i></span>
+          <span class="breakdown-score" id="bd-move-score">0</span>
+        </div>
+      </div>
+
+      <div class="modal-ai-coach">
+        <button class="btn btn-secondary" id="modal-ai-btn" type="button">🤖 AI 코치 코멘트 받기</button>
+        <p class="modal-ai-comment" id="modal-ai-comment"></p>
+      </div>
+
+      <p class="modal-save-note" id="modal-save-note"></p>
       <div class="modal-btns">
         <button class="btn btn-secondary" id="modal-retry-btn" type="button">다시 하기</button>
         <button class="btn btn-primary" id="modal-next-btn" type="button">다음 수어</button>
@@ -406,6 +434,32 @@
     </form>
   </div>
 
+  <div class="auth-modal-overlay" id="onboarding-modal" aria-hidden="true">
+    <div class="auth-modal onboarding-modal">
+      <div class="onboarding-emoji">👋</div>
+      <h2 id="onboarding-title">환영합니다!</h2>
+      <p class="onboarding-desc" id="onboarding-desc">먼저 자신의 이름을 포함한 인사 수어를 배워볼까요?</p>
+      <p class="onboarding-phrase" id="onboarding-phrase"></p>
+      <div class="onboarding-btns">
+        <button class="btn btn-primary" id="onboarding-start-btn" type="button">바로 배워보기 🤟</button>
+        <button class="btn btn-secondary" id="onboarding-skip-btn" type="button">나중에</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-modal-overlay" id="admin-pw-modal" aria-hidden="true">
+    <form class="auth-modal" id="admin-pw-form">
+      <div class="auth-modal-head">
+        <h2>🔐 관리자 인증</h2>
+        <button class="auth-modal-close" type="button" id="admin-pw-close">x</button>
+      </div>
+      <label for="admin-pw-input">비밀번호</label>
+      <input id="admin-pw-input" type="password" placeholder="관리자 비밀번호를 입력하세요">
+      <p class="auth-modal-message" id="admin-pw-message"></p>
+      <button class="btn btn-primary" type="submit">확인</button>
+    </form>
+  </div>
+
   <div class="admin-drawer" id="admin-drawer" aria-hidden="true">
     <div class="admin-panel">
       <div class="admin-panel-head">
@@ -437,12 +491,12 @@
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 
   <script src="/static/js/signs-data.js?v=16"></script>
-  <script src="/static/js/gesture-scorer.js?v=15"></script>
+  <script src="/static/js/gesture-scorer.js?v=16"></script>
   <script src="/static/js/feedback-coach.js?v=1"></script>
   <script src="/static/js/hand-tracker.js?v=8"></script>
   <script src="/static/js/sign-search.js?v=10"></script>
   <script src="/static/js/auth.js?v=2"></script>
-  <script src="/static/js/app.js?v=90"></script>
+  <script src="/static/js/app.js?v=92"></script>
   <script src="/static/js/admin-mode.js?v=3"></script>
 </body>
 </html>

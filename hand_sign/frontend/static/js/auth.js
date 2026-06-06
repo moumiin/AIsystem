@@ -130,9 +130,52 @@ class AuthManager {
       this.closeModals();
       this.renderLoggedIn();
       await this.refreshHistory();
+      this._showOnboarding(data.user);
     } catch (err) {
       this.setModalMessage(type, err.message || '요청에 실패했어요.', 'error');
     }
+  }
+
+  _showOnboarding(user) {
+    const name = user?.display_name || user?.username || '';
+    const modal = document.getElementById('onboarding-modal');
+    if (!modal) return;
+
+    const title = document.getElementById('onboarding-title');
+    const phrase = document.getElementById('onboarding-phrase');
+    if (title) title.textContent = `환영해요, ${name}님!`;
+    if (phrase) phrase.textContent = `"안녕하세요, ${name}입니다."`;
+
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+
+    const startBtn = document.getElementById('onboarding-start-btn');
+    const skipBtn = document.getElementById('onboarding-skip-btn');
+
+    const close = () => {
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden', 'true');
+    };
+
+    const onStart = () => {
+      close();
+      const input = document.getElementById('sign-search-input');
+      if (input) {
+        input.value = `안녕하세요 ${name}입니다`;
+        input.dispatchEvent(new Event('compositionend'));
+        document.getElementById('sign-search-btn')?.click();
+      }
+    };
+
+    startBtn?.removeEventListener('click', startBtn._onboardingHandler);
+    skipBtn?.removeEventListener('click', skipBtn._onboardingHandler);
+
+    startBtn._onboardingHandler = onStart;
+    skipBtn._onboardingHandler = close;
+
+    startBtn?.addEventListener('click', onStart);
+    skipBtn?.addEventListener('click', close);
+    modal.addEventListener('click', e => { if (e.target === modal) close(); }, { once: true });
   }
 
   clearInputs() {
@@ -202,6 +245,8 @@ class AuthManager {
     this.el.bar?.classList.add('is-logged-in');
     if (this.el.user) this.el.user.textContent = `${this.user?.display_name || this.user?.username}님`;
     this.setStatus('학습 기록 저장 중', 'ok');
+    const adminBtn = document.getElementById('admin-toggle');
+    if (adminBtn) adminBtn.style.display = this.user?.username === 'admin' ? '' : 'none';
   }
 
   renderLoggedOut() {
@@ -210,6 +255,8 @@ class AuthManager {
     if (this.el.summary) this.el.summary.textContent = '로그인하면 학습 기록이 저장됩니다.';
     if (this.el.list) this.el.list.innerHTML = '<li>아직 표시할 기록이 없어요.</li>';
     this.setStatus('기록 저장을 하려면 로그인해주세요.', 'warn');
+    const adminBtn = document.getElementById('admin-toggle');
+    if (adminBtn) adminBtn.style.display = 'none';
   }
 
   renderSummary(summary) {

@@ -15,9 +15,14 @@ class SignSearch {
     const searchInput = document.getElementById('sign-search-input');
     if (!searchBtn || !searchInput) return;
 
+    let _isComposing = false;
+    searchInput.addEventListener('compositionstart', () => { _isComposing = true; });
+    searchInput.addEventListener('compositionend', () => {
+      _isComposing = false;
+    });
     searchBtn.addEventListener('click', () => this._search(searchInput.value.trim()));
     searchInput.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') this._search(searchInput.value.trim());
+      if (event.key === 'Enter' && !_isComposing) this._search(searchInput.value.trim());
     });
 
     document.addEventListener('click', (event) => {
