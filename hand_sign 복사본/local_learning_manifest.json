@@ -1,0 +1,2735 @@
+{
+  "word_source": "/Users/gimhamin/Desktop/class/3학년/ai시스템설계및개발/GitHub/AIsystem/code/data.zip",
+  "jamo_source": "/Users/gimhamin/Desktop/class/3학년/ai시스템설계및개발/hearing_impaired_helper_make_model-main/datasets",
+  "excluded": [
+    "jisutja"
+  ],
+  "frame_format": "pose50_left50_right50",
+  "words": {
+    "수어": {
+      "folder": "NIA_SL_WORD0003_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "어떻게": {
+      "folder": "NIA_SL_WORD0331_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "부탁": {
+      "folder": "NIA_SL_WORD1589_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "얼마": {
+      "folder": "NIA_SL_WORD0436_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "이해": {
+      "folder": "NIA_SL_WORD1207_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "가능": {
+      "folder": "NIA_SL_WORD1282_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "불가능": {
+      "folder": "NIA_SL_WORD1097_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "맞다": {
+      "folder": "NIA_SL_WORD1174_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "틀리다": {
+      "folder": "NIA_SL_WORD1359_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "모르다": {
+      "folder": "NIA_SL_WORD1096_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "알다": {
+      "folder": "NIA_SL_WORD1185_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "괜찮다": {
+      "folder": "NIA_SL_WORD1381_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "감사": {
+      "folder": "NIA_SL_WORD1290_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "미소": {
+      "folder": "NIA_SL_WORD1399_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "좋다": {
+      "folder": "NIA_SL_WORD0738_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "없다": {
+      "folder": "NIA_SL_WORD1384_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "오다": {
+      "folder": "NIA_SL_WORD1149_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "가다": {
+      "folder": "NIA_SL_WORD0943_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "주다": {
+      "folder": "NIA_SL_WORD2394_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "받다": {
+      "folder": "NIA_SL_WORD2187_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "보이다": {
+      "folder": "NIA_SL_WORD2601_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "알려주다": {
+      "folder": "NIA_SL_WORD2198_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "인사법": {
+      "folder": "NIA_SL_WORD0775_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "소개": {
+      "folder": "NIA_SL_WORD0566_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "상담": {
+      "folder": "NIA_SL_WORD1597_REAL01_D",
+      "category": "인사·기본표현",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "월요일": {
+      "folder": "NIA_SL_WORD0336_REAL01_D",
+      "category": "숫자·날짜·시간",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "화요일": {
+      "folder": "NIA_SL_WORD0347_REAL01_D",
+      "category": "숫자·날짜·시간",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "수요일": {
+      "folder": "NIA_SL_WORD0329_REAL01_D",
+      "category": "숫자·날짜·시간",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "금요일": {
+      "folder": "NIA_SL_WORD0316_REAL01_D",
+      "category": "숫자·날짜·시간",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "일요일": {
+      "folder": "NIA_SL_WORD0257_REAL01_D",
+      "category": "숫자·날짜·시간",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "자정": {
+      "folder": "NIA_SL_WORD0338_REAL01_D",
+      "category": "숫자·날짜·시간",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "방금": {
+      "folder": "NIA_SL_WORD0320_REAL01_D",
+      "category": "숫자·날짜·시간",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "아까": {
+      "folder": "NIA_SL_WORD0339_REAL01_D",
+      "category": "숫자·날짜·시간",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "예전": {
+      "folder": "NIA_SL_WORD0334_REAL01_D",
+      "category": "숫자·날짜·시간",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "연말": {
+      "folder": "NIA_SL_WORD0333_REAL01_D",
+      "category": "숫자·날짜·시간",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "공휴일": {
+      "folder": "NIA_SL_WORD0312_REAL01_D",
+      "category": "숫자·날짜·시간",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "평일": {
+      "folder": "NIA_SL_WORD0344_REAL01_D",
+      "category": "숫자·날짜·시간",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "생년월일": {
+      "folder": "NIA_SL_WORD0328_REAL01_D",
+      "category": "숫자·날짜·시간",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "어린이날": {
+      "folder": "NIA_SL_WORD0332_REAL01_D",
+      "category": "숫자·날짜·시간",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "한글날": {
+      "folder": "NIA_SL_WORD0345_REAL01_D",
+      "category": "숫자·날짜·시간",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "현충일": {
+      "folder": "NIA_SL_WORD0346_REAL01_D",
+      "category": "숫자·날짜·시간",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "3.1절": {
+      "folder": "NIA_SL_WORD0327_REAL01_D",
+      "category": "숫자·날짜·시간",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "식목일": {
+      "folder": "NIA_SL_WORD0319_REAL01_D",
+      "category": "숫자·날짜·시간",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "사계절": {
+      "folder": "NIA_SL_WORD2572_REAL01_D",
+      "category": "숫자·날짜·시간",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "첫번째": {
+      "folder": "NIA_SL_WORD0058_REAL01_D",
+      "category": "숫자·날짜·시간",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "두번째": {
+      "folder": "NIA_SL_WORD0179_REAL01_D",
+      "category": "숫자·날짜·시간",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "세번째": {
+      "folder": "NIA_SL_WORD0313_REAL01_D",
+      "category": "숫자·날짜·시간",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "열번째": {
+      "folder": "NIA_SL_WORD0759_REAL01_D",
+      "category": "숫자·날짜·시간",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "엄마": {
+      "folder": "NIA_SL_WORD1528_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "딸": {
+      "folder": "NIA_SL_WORD1522_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "형": {
+      "folder": "NIA_SL_WORD1574_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "누나": {
+      "folder": "NIA_SL_WORD1516_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "오빠": {
+      "folder": "NIA_SL_WORD1556_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "여동생": {
+      "folder": "NIA_SL_WORD1518_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "남매": {
+      "folder": "NIA_SL_WORD1512_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "할머니": {
+      "folder": "NIA_SL_WORD1565_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "할아버지": {
+      "folder": "NIA_SL_WORD1566_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "손자": {
+      "folder": "NIA_SL_WORD0051_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "손녀": {
+      "folder": "NIA_SL_WORD0050_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "남편": {
+      "folder": "NIA_SL_WORD1531_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "아내": {
+      "folder": "NIA_SL_WORD1524_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "부부": {
+      "folder": "NIA_SL_WORD1535_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "가족": {
+      "folder": "NIA_SL_WORD1492_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "아기": {
+      "folder": "NIA_SL_WORD1189_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "어른": {
+      "folder": "NIA_SL_WORD2016_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "노인": {
+      "folder": "NIA_SL_WORD2032_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "청년": {
+      "folder": "NIA_SL_WORD2023_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "청소년": {
+      "folder": "NIA_SL_WORD2024_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "한국인": {
+      "folder": "NIA_SL_WORD2013_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "외국인": {
+      "folder": "NIA_SL_WORD0014_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "친구": {
+      "folder": "NIA_SL_WORD1204_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "고모": {
+      "folder": "NIA_SL_WORD1500_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "이모": {
+      "folder": "NIA_SL_WORD1499_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "조카": {
+      "folder": "NIA_SL_WORD1568_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "맏형": {
+      "folder": "NIA_SL_WORD1563_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "큰언니": {
+      "folder": "NIA_SL_WORD2167_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "시어머니": {
+      "folder": "NIA_SL_WORD2141_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "시아버지": {
+      "folder": "NIA_SL_WORD1547_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "장모": {
+      "folder": "NIA_SL_WORD2160_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "장인어른": {
+      "folder": "NIA_SL_WORD2161_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "외할머니": {
+      "folder": "NIA_SL_WORD2151_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "외할아버지": {
+      "folder": "NIA_SL_WORD2152_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "큰아버지": {
+      "folder": "NIA_SL_WORD2165_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "큰어머니": {
+      "folder": "NIA_SL_WORD2166_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "며느리": {
+      "folder": "NIA_SL_WORD2006_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "사위": {
+      "folder": "NIA_SL_WORD0045_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "형수": {
+      "folder": "NIA_SL_WORD2170_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "처남": {
+      "folder": "NIA_SL_WORD2162_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "처형": {
+      "folder": "NIA_SL_WORD2163_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "제부": {
+      "folder": "NIA_SL_WORD2127_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "매형": {
+      "folder": "NIA_SL_WORD2126_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "남자": {
+      "folder": "NIA_SL_WORD1104_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "여자": {
+      "folder": "NIA_SL_WORD1275_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "사람": {
+      "folder": "NIA_SL_WORD1242_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "총각": {
+      "folder": "NIA_SL_WORD1280_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "처녀": {
+      "folder": "NIA_SL_WORD1132_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "신부": {
+      "folder": "NIA_SL_WORD2143_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "신혼": {
+      "folder": "NIA_SL_WORD2144_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "고조할아버지": {
+      "folder": "NIA_SL_WORD2120_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "작은아빠": {
+      "folder": "NIA_SL_WORD2138_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "작은엄마": {
+      "folder": "NIA_SL_WORD2137_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "친척": {
+      "folder": "NIA_SL_WORD0608_REAL01_D",
+      "category": "가족·사람",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "눈": {
+      "folder": "NIA_SL_WORD0005_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "코": {
+      "folder": "NIA_SL_WORD1235_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "입": {
+      "folder": "NIA_SL_WORD1279_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "귀": {
+      "folder": "NIA_SL_WORD1370_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "손": {
+      "folder": "NIA_SL_WORD1226_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "머리": {
+      "folder": "NIA_SL_WORD1249_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "얼굴": {
+      "folder": "NIA_SL_WORD1210_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "몸": {
+      "folder": "NIA_SL_WORD1253_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "다리": {
+      "folder": "NIA_SL_WORD1599_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "팔": {
+      "folder": "NIA_SL_WORD1147_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "발가락": {
+      "folder": "NIA_SL_WORD0008_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "목": {
+      "folder": "NIA_SL_WORD1376_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "혀": {
+      "folder": "NIA_SL_WORD1181_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "볼": {
+      "folder": "NIA_SL_WORD1375_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "이마": {
+      "folder": "NIA_SL_WORD1374_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "눈썹": {
+      "folder": "NIA_SL_WORD1371_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "머리카락": {
+      "folder": "NIA_SL_WORD1241_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "겨드랑이": {
+      "folder": "NIA_SL_WORD1297_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "엉덩이": {
+      "folder": "NIA_SL_WORD1270_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "감기": {
+      "folder": "NIA_SL_WORD0037_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "당뇨병": {
+      "folder": "NIA_SL_WORD0033_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "빈혈": {
+      "folder": "NIA_SL_WORD0070_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "골절": {
+      "folder": "NIA_SL_WORD0387_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "불면증": {
+      "folder": "NIA_SL_WORD0042_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "변비": {
+      "folder": "NIA_SL_WORD0039_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "설사": {
+      "folder": "NIA_SL_WORD0046_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "화상": {
+      "folder": "NIA_SL_WORD0071_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "식도염": {
+      "folder": "NIA_SL_WORD0441_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "치료": {
+      "folder": "NIA_SL_WORD0064_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "병원": {
+      "folder": "NIA_SL_WORD1496_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "의사": {
+      "folder": "NIA_SL_WORD0163_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "간호사": {
+      "folder": "NIA_SL_WORD0187_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "입원": {
+      "folder": "NIA_SL_WORD0060_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "퇴원": {
+      "folder": "NIA_SL_WORD0067_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "마스크": {
+      "folder": "NIA_SL_WORD0499_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "붕대": {
+      "folder": "NIA_SL_WORD0044_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "소화제": {
+      "folder": "NIA_SL_WORD0049_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "한약": {
+      "folder": "NIA_SL_WORD0068_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "건강": {
+      "folder": "NIA_SL_WORD1115_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "체온": {
+      "folder": "NIA_SL_WORD0288_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "면역": {
+      "folder": "NIA_SL_WORD0036_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "통증": {
+      "folder": "NIA_SL_WORD0689_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "혈액형": {
+      "folder": "NIA_SL_WORD0612_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "콧물": {
+      "folder": "NIA_SL_WORD1239_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "치아": {
+      "folder": "NIA_SL_WORD1373_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "여드름": {
+      "folder": "NIA_SL_WORD2146_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "수면제": {
+      "folder": "NIA_SL_WORD0052_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "진단서": {
+      "folder": "NIA_SL_WORD0062_REAL01_D",
+      "category": "신체·건강",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "슬프다": {
+      "folder": "NIA_SL_WORD0009_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "화나다": {
+      "folder": "NIA_SL_WORD1236_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "무섭다": {
+      "folder": "NIA_SL_WORD1134_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "놀랍다": {
+      "folder": "NIA_SL_WORD2526_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "싫어하다": {
+      "folder": "NIA_SL_WORD0025_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "행복": {
+      "folder": "NIA_SL_WORD1169_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "불행": {
+      "folder": "NIA_SL_WORD0043_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "걱정": {
+      "folder": "NIA_SL_WORD1294_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "고민": {
+      "folder": "NIA_SL_WORD0001_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "불안": {
+      "folder": "NIA_SL_WORD1123_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "우울": {
+      "folder": "NIA_SL_WORD1251_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "피곤": {
+      "folder": "NIA_SL_WORD1554_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "즐겁다": {
+      "folder": "NIA_SL_WORD1140_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "창피": {
+      "folder": "NIA_SL_WORD1215_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "성실": {
+      "folder": "NIA_SL_WORD0023_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "침착": {
+      "folder": "NIA_SL_WORD0022_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "귀엽다": {
+      "folder": "NIA_SL_WORD1314_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "긍정적": {
+      "folder": "NIA_SL_WORD2060_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "솔직하다": {
+      "folder": "NIA_SL_WORD2090_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "안타깝다": {
+      "folder": "NIA_SL_WORD0011_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "어색하다": {
+      "folder": "NIA_SL_WORD0012_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "뻔뻔": {
+      "folder": "NIA_SL_WORD0002_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "쑥쓰럽다": {
+      "folder": "NIA_SL_WORD0456_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "소외감": {
+      "folder": "NIA_SL_WORD2087_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "감동": {
+      "folder": "NIA_SL_WORD1289_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "짜증": {
+      "folder": "NIA_SL_WORD1255_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "당황": {
+      "folder": "NIA_SL_WORD1128_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "실망": {
+      "folder": "NIA_SL_WORD1195_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "그립다": {
+      "folder": "NIA_SL_WORD1506_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "섭섭하다": {
+      "folder": "NIA_SL_WORD1151_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "답답": {
+      "folder": "NIA_SL_WORD1102_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "힘들다": {
+      "folder": "NIA_SL_WORD1222_REAL01_D",
+      "category": "감정·성격",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "밥": {
+      "folder": "NIA_SL_WORD1534_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "고추": {
+      "folder": "NIA_SL_WORD0074_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "두부": {
+      "folder": "NIA_SL_WORD0087_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "라면": {
+      "folder": "NIA_SL_WORD0090_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "비빔밥": {
+      "folder": "NIA_SL_WORD0098_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "떡국": {
+      "folder": "NIA_SL_WORD0089_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "된장찌게": {
+      "folder": "NIA_SL_WORD0085_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "돼지고기": {
+      "folder": "NIA_SL_WORD0086_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "소불고기": {
+      "folder": "NIA_SL_WORD0097_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "짬뽕": {
+      "folder": "NIA_SL_WORD0112_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "칼국수": {
+      "folder": "NIA_SL_WORD0114_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "보신탕": {
+      "folder": "NIA_SL_WORD0095_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "사과": {
+      "folder": "NIA_SL_WORD0099_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "딸기": {
+      "folder": "NIA_SL_WORD0088_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "참외": {
+      "folder": "NIA_SL_WORD0113_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "무": {
+      "folder": "NIA_SL_WORD0092_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "밥그릇": {
+      "folder": "NIA_SL_WORD0093_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "냄비": {
+      "folder": "NIA_SL_WORD0081_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "식당": {
+      "folder": "NIA_SL_WORD0104_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "부엌": {
+      "folder": "NIA_SL_WORD0096_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "커피": {
+      "folder": "NIA_SL_WORD0115_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "콜라": {
+      "folder": "NIA_SL_WORD0116_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "사이다": {
+      "folder": "NIA_SL_WORD0100_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "음료수": {
+      "folder": "NIA_SL_WORD0007_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "술": {
+      "folder": "NIA_SL_WORD0109_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "소주": {
+      "folder": "NIA_SL_WORD0102_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "막걸리": {
+      "folder": "NIA_SL_WORD0091_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "와인": {
+      "folder": "NIA_SL_WORD0119_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "달다": {
+      "folder": "NIA_SL_WORD0101_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "양식": {
+      "folder": "NIA_SL_WORD0107_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "가래떡": {
+      "folder": "NIA_SL_WORD0072_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "백설기": {
+      "folder": "NIA_SL_WORD0120_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "꿀물": {
+      "folder": "NIA_SL_WORD0080_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "배추국": {
+      "folder": "NIA_SL_WORD0077_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "꽈베기": {
+      "folder": "NIA_SL_WORD0078_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "다과": {
+      "folder": "NIA_SL_WORD0083_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "통조림": {
+      "folder": "NIA_SL_WORD0118_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "쌀가루": {
+      "folder": "NIA_SL_WORD0105_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "밥솥": {
+      "folder": "NIA_SL_WORD0094_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "술잔": {
+      "folder": "NIA_SL_WORD0103_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "고깃국": {
+      "folder": "NIA_SL_WORD0073_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "고추가루": {
+      "folder": "NIA_SL_WORD0075_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "벌꿀": {
+      "folder": "NIA_SL_WORD0079_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "찬물": {
+      "folder": "NIA_SL_WORD0082_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "냉커피": {
+      "folder": "NIA_SL_WORD0106_REAL01_D",
+      "category": "음식·음료",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "에어컨": {
+      "folder": "NIA_SL_WORD0128_REAL01_D",
+      "category": "일상생활·집",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "이불": {
+      "folder": "NIA_SL_WORD0127_REAL01_D",
+      "category": "일상생활·집",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "잠옷": {
+      "folder": "NIA_SL_WORD0126_REAL01_D",
+      "category": "일상생활·집",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "치약": {
+      "folder": "NIA_SL_WORD0132_REAL01_D",
+      "category": "일상생활·집",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "세수": {
+      "folder": "NIA_SL_WORD1543_REAL01_D",
+      "category": "일상생활·집",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "양치": {
+      "folder": "NIA_SL_WORD1555_REAL01_D",
+      "category": "일상생활·집",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "월세": {
+      "folder": "NIA_SL_WORD0130_REAL01_D",
+      "category": "일상생활·집",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "전세": {
+      "folder": "NIA_SL_WORD0131_REAL01_D",
+      "category": "일상생활·집",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "집주인": {
+      "folder": "NIA_SL_WORD0207_REAL01_D",
+      "category": "일상생활·집",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "이사": {
+      "folder": "NIA_SL_WORD1558_REAL01_D",
+      "category": "일상생활·집",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "설거지": {
+      "folder": "NIA_SL_WORD1103_REAL01_D",
+      "category": "일상생활·집",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "자다": {
+      "folder": "NIA_SL_WORD1377_REAL01_D",
+      "category": "일상생활·집",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "잠자다": {
+      "folder": "NIA_SL_WORD1245_REAL01_D",
+      "category": "일상생활·집",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "행거": {
+      "folder": "NIA_SL_WORD0129_REAL01_D",
+      "category": "일상생활·집",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "옷장": {
+      "folder": "NIA_SL_WORD0789_REAL01_D",
+      "category": "일상생활·집",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "의자": {
+      "folder": "NIA_SL_WORD1182_REAL01_D",
+      "category": "일상생활·집",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "세수대야": {
+      "folder": "NIA_SL_WORD0476_REAL01_D",
+      "category": "일상생활·집",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "용품": {
+      "folder": "NIA_SL_WORD0110_REAL01_D",
+      "category": "일상생활·집",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "귀중품": {
+      "folder": "NIA_SL_WORD0445_REAL01_D",
+      "category": "일상생활·집",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "물통": {
+      "folder": "NIA_SL_WORD0532_REAL01_D",
+      "category": "일상생활·집",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "운동화": {
+      "folder": "NIA_SL_WORD0125_REAL01_D",
+      "category": "옷·외모",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "군복": {
+      "folder": "NIA_SL_WORD0122_REAL01_D",
+      "category": "옷·외모",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "양산": {
+      "folder": "NIA_SL_WORD0124_REAL01_D",
+      "category": "옷·외모",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "포켓": {
+      "folder": "NIA_SL_WORD0123_REAL01_D",
+      "category": "옷·외모",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "가죽신": {
+      "folder": "NIA_SL_WORD0121_REAL01_D",
+      "category": "옷·외모",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "가발": {
+      "folder": "NIA_SL_WORD0355_REAL01_D",
+      "category": "옷·외모",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "벨트": {
+      "folder": "NIA_SL_WORD0631_REAL01_D",
+      "category": "옷·외모",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "날씬": {
+      "folder": "NIA_SL_WORD1281_REAL01_D",
+      "category": "옷·외모",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "뚱뚱하다": {
+      "folder": "NIA_SL_WORD1184_REAL01_D",
+      "category": "옷·외모",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "미남": {
+      "folder": "NIA_SL_WORD1108_REAL01_D",
+      "category": "옷·외모",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "미녀": {
+      "folder": "NIA_SL_WORD1113_REAL01_D",
+      "category": "옷·외모",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "얼굴형": {
+      "folder": "NIA_SL_WORD2097_REAL01_D",
+      "category": "옷·외모",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "체형": {
+      "folder": "NIA_SL_WORD2072_REAL01_D",
+      "category": "옷·외모",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "아름답다": {
+      "folder": "NIA_SL_WORD2010_REAL01_D",
+      "category": "옷·외모",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "예쁘다": {
+      "folder": "NIA_SL_WORD1145_REAL01_D",
+      "category": "옷·외모",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "검정머리": {
+      "folder": "NIA_SL_WORD0341_REAL01_D",
+      "category": "옷·외모",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "염색": {
+      "folder": "NIA_SL_WORD2147_REAL01_D",
+      "category": "옷·외모",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "구두": {
+      "folder": "NIA_SL_WORD0816_REAL01_D",
+      "category": "옷·외모",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "고등학교": {
+      "folder": "NIA_SL_WORD0211_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "교수": {
+      "folder": "NIA_SL_WORD0140_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "교장": {
+      "folder": "NIA_SL_WORD0141_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "학부모": {
+      "folder": "NIA_SL_WORD0239_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "교실": {
+      "folder": "NIA_SL_WORD0215_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "교무실": {
+      "folder": "NIA_SL_WORD0213_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "교탁": {
+      "folder": "NIA_SL_WORD0418_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "복습": {
+      "folder": "NIA_SL_WORD0223_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "예습": {
+      "folder": "NIA_SL_WORD0233_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "독서": {
+      "folder": "NIA_SL_WORD0034_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "서점": {
+      "folder": "NIA_SL_WORD0226_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "독서실": {
+      "folder": "NIA_SL_WORD0220_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "개학": {
+      "folder": "NIA_SL_WORD0214_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "등교": {
+      "folder": "NIA_SL_WORD0221_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "낙제": {
+      "folder": "NIA_SL_WORD0218_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "분필": {
+      "folder": "NIA_SL_WORD0224_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "상장": {
+      "folder": "NIA_SL_WORD0225_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "답안지": {
+      "folder": "NIA_SL_WORD0469_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "문제지": {
+      "folder": "NIA_SL_WORD0528_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "필기시험": {
+      "folder": "NIA_SL_WORD0027_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "유학": {
+      "folder": "NIA_SL_WORD0234_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "학업": {
+      "folder": "NIA_SL_WORD0227_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "훈련": {
+      "folder": "NIA_SL_WORD0241_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "실습": {
+      "folder": "NIA_SL_WORD0228_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "자습": {
+      "folder": "NIA_SL_WORD0483_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "학습": {
+      "folder": "NIA_SL_WORD0412_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "재학": {
+      "folder": "NIA_SL_WORD0237_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "연구": {
+      "folder": "NIA_SL_WORD0238_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "연구소": {
+      "folder": "NIA_SL_WORD0231_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "연구실": {
+      "folder": "NIA_SL_WORD0232_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "동화책": {
+      "folder": "NIA_SL_WORD0267_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "문학": {
+      "folder": "NIA_SL_WORD0269_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "예절": {
+      "folder": "NIA_SL_WORD0219_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "국어학": {
+      "folder": "NIA_SL_WORD0217_REAL01_D",
+      "category": "학교·교육",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "요리사": {
+      "folder": "NIA_SL_WORD0159_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "가수": {
+      "folder": "NIA_SL_WORD0133_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "디자이너": {
+      "folder": "NIA_SL_WORD0147_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "운동선수": {
+      "folder": "NIA_SL_WORD0161_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "통역사": {
+      "folder": "NIA_SL_WORD0174_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "예술가": {
+      "folder": "NIA_SL_WORD0157_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "음악가": {
+      "folder": "NIA_SL_WORD0271_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "사진작가": {
+      "folder": "NIA_SL_WORD0614_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "출근": {
+      "folder": "NIA_SL_WORD0170_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "근무": {
+      "folder": "NIA_SL_WORD0173_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "사무실": {
+      "folder": "NIA_SL_WORD2183_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "직원": {
+      "folder": "NIA_SL_WORD2184_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "사장": {
+      "folder": "NIA_SL_WORD2185_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "아르바이트": {
+      "folder": "NIA_SL_WORD0203_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "취업": {
+      "folder": "NIA_SL_WORD2196_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "구직": {
+      "folder": "NIA_SL_WORD0193_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "월급": {
+      "folder": "NIA_SL_WORD2179_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "고용": {
+      "folder": "NIA_SL_WORD0190_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "퇴사": {
+      "folder": "NIA_SL_WORD0175_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "재택근무": {
+      "folder": "NIA_SL_WORD0166_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "회식": {
+      "folder": "NIA_SL_WORD0183_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "사직": {
+      "folder": "NIA_SL_WORD0176_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "퇴임": {
+      "folder": "NIA_SL_WORD0162_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "기술자": {
+      "folder": "NIA_SL_WORD2180_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "농부": {
+      "folder": "NIA_SL_WORD0774_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "마술사": {
+      "folder": "NIA_SL_WORD0498_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "교육자": {
+      "folder": "NIA_SL_WORD0216_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "화가": {
+      "folder": "NIA_SL_WORD2201_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "수집가": {
+      "folder": "NIA_SL_WORD0053_REAL01_D",
+      "category": "직업·일",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "관광버스": {
+      "folder": "NIA_SL_WORD0139_REAL01_D",
+      "category": "교통·장소",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "마을버스": {
+      "folder": "NIA_SL_WORD0148_REAL01_D",
+      "category": "교통·장소",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "구급차": {
+      "folder": "NIA_SL_WORD0149_REAL01_D",
+      "category": "교통·장소",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "여객선": {
+      "folder": "NIA_SL_WORD0154_REAL01_D",
+      "category": "교통·장소",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "여행사": {
+      "folder": "NIA_SL_WORD0155_REAL01_D",
+      "category": "교통·장소",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "자가용": {
+      "folder": "NIA_SL_WORD0165_REAL01_D",
+      "category": "교통·장소",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "기차역": {
+      "folder": "NIA_SL_WORD0156_REAL01_D",
+      "category": "교통·장소",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "공항": {
+      "folder": "NIA_SL_WORD2177_REAL01_D",
+      "category": "교통·장소",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "주차장": {
+      "folder": "NIA_SL_WORD0168_REAL01_D",
+      "category": "교통·장소",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "주유소": {
+      "folder": "NIA_SL_WORD0206_REAL01_D",
+      "category": "교통·장소",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "터미널": {
+      "folder": "NIA_SL_WORD0172_REAL01_D",
+      "category": "교통·장소",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "백화점": {
+      "folder": "NIA_SL_WORD0197_REAL01_D",
+      "category": "교통·장소",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "경찰서": {
+      "folder": "NIA_SL_WORD0136_REAL01_D",
+      "category": "교통·장소",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "보건소": {
+      "folder": "NIA_SL_WORD0041_REAL01_D",
+      "category": "교통·장소",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "찻길": {
+      "folder": "NIA_SL_WORD0142_REAL01_D",
+      "category": "교통·장소",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "사거리": {
+      "folder": "NIA_SL_WORD0417_REAL01_D",
+      "category": "교통·장소",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "버스값": {
+      "folder": "NIA_SL_WORD0192_REAL01_D",
+      "category": "교통·장소",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "예식장": {
+      "folder": "NIA_SL_WORD0055_REAL01_D",
+      "category": "교통·장소",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "주민센터": {
+      "folder": "NIA_SL_WORD0489_REAL01_D",
+      "category": "교통·장소",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "낚시터": {
+      "folder": "NIA_SL_WORD0031_REAL01_D",
+      "category": "교통·장소",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "매표소": {
+      "folder": "NIA_SL_WORD0035_REAL01_D",
+      "category": "교통·장소",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "축구장": {
+      "folder": "NIA_SL_WORD0063_REAL01_D",
+      "category": "교통·장소",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "수영장": {
+      "folder": "NIA_SL_WORD0655_REAL01_D",
+      "category": "교통·장소",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "강": {
+      "folder": "NIA_SL_WORD0285_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "바다": {
+      "folder": "NIA_SL_WORD2546_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "하늘": {
+      "folder": "NIA_SL_WORD0290_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "숲": {
+      "folder": "NIA_SL_WORD2558_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "달빛": {
+      "folder": "NIA_SL_WORD0286_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "파도": {
+      "folder": "NIA_SL_WORD0289_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "장마": {
+      "folder": "NIA_SL_WORD0287_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "강풍": {
+      "folder": "NIA_SL_WORD0404_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "강아지": {
+      "folder": "NIA_SL_WORD0292_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "참새": {
+      "folder": "NIA_SL_WORD0308_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "송아지": {
+      "folder": "NIA_SL_WORD0304_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "망아지": {
+      "folder": "NIA_SL_WORD0507_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "꿀벌": {
+      "folder": "NIA_SL_WORD2585_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "기린": {
+      "folder": "NIA_SL_WORD2584_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "벚꽃": {
+      "folder": "NIA_SL_WORD0301_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "무궁화": {
+      "folder": "NIA_SL_WORD0299_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "연꽃": {
+      "folder": "NIA_SL_WORD0307_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "꽃씨": {
+      "folder": "NIA_SL_WORD0295_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "꽃잎": {
+      "folder": "NIA_SL_WORD0296_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "솔잎": {
+      "folder": "NIA_SL_WORD0303_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "가시나무": {
+      "folder": "NIA_SL_WORD0291_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "밤나무": {
+      "folder": "NIA_SL_WORD0300_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "감나무": {
+      "folder": "NIA_SL_WORD2582_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "구렁이": {
+      "folder": "NIA_SL_WORD0293_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "까마귀": {
+      "folder": "NIA_SL_WORD0294_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "깃털": {
+      "folder": "NIA_SL_WORD0302_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "양털": {
+      "folder": "NIA_SL_WORD0306_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "햇빛": {
+      "folder": "NIA_SL_WORD2580_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "홍수": {
+      "folder": "NIA_SL_WORD2581_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "먹구름": {
+      "folder": "NIA_SL_WORD2544_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "강물": {
+      "folder": "NIA_SL_WORD2533_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "별": {
+      "folder": "NIA_SL_WORD2551_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "호수": {
+      "folder": "NIA_SL_WORD2561_REAL01_D",
+      "category": "자연·날씨",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "갈색": {
+      "folder": "NIA_SL_WORD0310_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "보라색": {
+      "folder": "NIA_SL_WORD0322_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "황금색": {
+      "folder": "NIA_SL_WORD0348_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "흑백": {
+      "folder": "NIA_SL_WORD0349_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "노랑": {
+      "folder": "NIA_SL_WORD1323_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "빨강": {
+      "folder": "NIA_SL_WORD1322_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "파랑": {
+      "folder": "NIA_SL_WORD1325_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "초록": {
+      "folder": "NIA_SL_WORD1324_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "흰": {
+      "folder": "NIA_SL_WORD1121_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "검정": {
+      "folder": "NIA_SL_WORD1321_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "분홍조명": {
+      "folder": "NIA_SL_WORD0323_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "최대": {
+      "folder": "NIA_SL_WORD0342_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "최소": {
+      "folder": "NIA_SL_WORD0343_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "최상급": {
+      "folder": "NIA_SL_WORD0311_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "갑절": {
+      "folder": "NIA_SL_WORD2232_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "한명": {
+      "folder": "NIA_SL_WORD1109_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "두명": {
+      "folder": "NIA_SL_WORD1305_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "세명": {
+      "folder": "NIA_SL_WORD1306_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "네명": {
+      "folder": "NIA_SL_WORD1307_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "다섯명": {
+      "folder": "NIA_SL_WORD1308_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "여섯명": {
+      "folder": "NIA_SL_WORD1309_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "한국어": {
+      "folder": "NIA_SL_WORD2199_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "독일어": {
+      "folder": "NIA_SL_WORD0143_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "영어": {
+      "folder": "NIA_SL_WORD2596_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "외국어": {
+      "folder": "NIA_SL_WORD0158_REAL01_D",
+      "category": "색깔·수량",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "배드민턴": {
+      "folder": "NIA_SL_WORD0038_REAL01_D",
+      "category": "스포츠·취미",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "유도": {
+      "folder": "NIA_SL_WORD1523_REAL01_D",
+      "category": "스포츠·취미",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "권투": {
+      "folder": "NIA_SL_WORD1505_REAL01_D",
+      "category": "스포츠·취미",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "마라톤": {
+      "folder": "NIA_SL_WORD1525_REAL01_D",
+      "category": "스포츠·취미",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "수영": {
+      "folder": "NIA_SL_WORD1545_REAL01_D",
+      "category": "스포츠·취미",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "테니스": {
+      "folder": "NIA_SL_WORD1564_REAL01_D",
+      "category": "스포츠·취미",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "야구": {
+      "folder": "NIA_SL_WORD1552_REAL01_D",
+      "category": "스포츠·취미",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "낚시": {
+      "folder": "NIA_SL_WORD1511_REAL01_D",
+      "category": "스포츠·취미",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "탈춤": {
+      "folder": "NIA_SL_WORD0353_REAL01_D",
+      "category": "스포츠·취미",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "동아리": {
+      "folder": "NIA_SL_WORD0146_REAL01_D",
+      "category": "스포츠·취미",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "올림픽경기": {
+      "folder": "NIA_SL_WORD0056_REAL01_D",
+      "category": "스포츠·취미",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "운동경기": {
+      "folder": "NIA_SL_WORD0059_REAL01_D",
+      "category": "스포츠·취미",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "결승전": {
+      "folder": "NIA_SL_WORD0030_REAL01_D",
+      "category": "스포츠·취미",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "코치": {
+      "folder": "NIA_SL_WORD0171_REAL01_D",
+      "category": "스포츠·취미",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "동메달": {
+      "folder": "NIA_SL_WORD0488_REAL01_D",
+      "category": "스포츠·취미",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "우승": {
+      "folder": "NIA_SL_WORD0756_REAL01_D",
+      "category": "스포츠·취미",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "골키퍼": {
+      "folder": "NIA_SL_WORD1502_REAL01_D",
+      "category": "스포츠·취미",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "승부차기": {
+      "folder": "NIA_SL_WORD1546_REAL01_D",
+      "category": "스포츠·취미",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "등산": {
+      "folder": "NIA_SL_WORD1162_REAL01_D",
+      "category": "스포츠·취미",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "물놀이": {
+      "folder": "NIA_SL_WORD2130_REAL01_D",
+      "category": "스포츠·취미",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "관광": {
+      "folder": "NIA_SL_WORD2057_REAL01_D",
+      "category": "스포츠·취미",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "축하": {
+      "folder": "NIA_SL_WORD0258_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "생일": {
+      "folder": "NIA_SL_WORD2136_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "결혼": {
+      "folder": "NIA_SL_WORD1497_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "결혼식": {
+      "folder": "NIA_SL_WORD2116_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "환갑": {
+      "folder": "NIA_SL_WORD2171_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "백일잔치": {
+      "folder": "NIA_SL_WORD0561_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "채팅": {
+      "folder": "NIA_SL_WORD0169_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "화상채팅": {
+      "folder": "NIA_SL_WORD0182_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "후원": {
+      "folder": "NIA_SL_WORD0185_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "명예": {
+      "folder": "NIA_SL_WORD0517_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "희생": {
+      "folder": "NIA_SL_WORD0186_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "병문안": {
+      "folder": "NIA_SL_WORD0028_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "회복": {
+      "folder": "NIA_SL_WORD0057_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "국기": {
+      "folder": "NIA_SL_WORD0423_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "태극기": {
+      "folder": "NIA_SL_WORD0903_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "독립": {
+      "folder": "NIA_SL_WORD0424_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "금연": {
+      "folder": "NIA_SL_WORD0437_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "금주": {
+      "folder": "NIA_SL_WORD0439_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "금식": {
+      "folder": "NIA_SL_WORD0435_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "장애인": {
+      "folder": "NIA_SL_WORD0020_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "농인": {
+      "folder": "NIA_SL_WORD0461_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "회개": {
+      "folder": "NIA_SL_WORD0259_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "구조": {
+      "folder": "NIA_SL_WORD1588_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    },
+    "보호": {
+      "folder": "NIA_SL_WORD0363_REAL01_D",
+      "category": "사회·감사생활",
+      "frames": 30,
+      "source": "local_word_dataset"
+    }
+  },
+  "missing": []
+}
