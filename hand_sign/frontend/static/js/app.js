@@ -28,6 +28,8 @@ class SignLanguageApp {
     this.demoViewPitch = 0;
     this._demoViewDragging = false;
     this._lastDemoPointer = null;
+    this._lastHandDebugAt = 0;
+    this.demoSpeed = 'normal';
 
     this.SUCCESS_SCORE  = 70;
     this.SUCCESS_FRAMES = 32;
@@ -44,6 +46,25 @@ class SignLanguageApp {
     // 자음/모음 데이터 로드
     this._loadJamos();
     this._loadJamoAiModel();
+    this._initHandDebug();
+  }
+
+  _initHandDebug() {
+    window.handDebug = {
+      enabled: false,
+      latest: null,
+      on() {
+        this.enabled = true;
+        console.log('[handDebug] 켜짐: 손 좌표가 0.5초마다 출력됩니다.');
+      },
+      off() {
+        this.enabled = false;
+        console.log('[handDebug] 꺼짐');
+      },
+      print() {
+        console.log('[handDebug.latest]', this.latest);
+      },
+    };
   }
 
   async _loadJamos() {
@@ -290,6 +311,7 @@ class SignLanguageApp {
     const leftBtn = document.getElementById('demo-rotate-left');
     const rightBtn = document.getElementById('demo-rotate-right');
     const resetBtn = document.getElementById('demo-rotate-reset');
+    const speedControl = document.getElementById('demo-speed-control');
 
     const rotate = (delta) => {
       this.demoViewYaw = Math.max(-75, Math.min(75, this.demoViewYaw + delta));
@@ -302,6 +324,16 @@ class SignLanguageApp {
       this.demoViewYaw = 0;
       this.demoViewPitch = 0;
       this._refreshDemoView();
+    });
+
+    speedControl?.querySelectorAll('[data-demo-speed]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        this.demoSpeed = btn.dataset.demoSpeed || 'normal';
+        speedControl.querySelectorAll('[data-demo-speed]').forEach(item => {
+          item.classList.toggle('active', item === btn);
+        });
+        if (this.currentSign) this.playOpenPose(this.currentSign);
+      });
     });
 
     if (!canvas) return;
@@ -350,6 +382,17 @@ class SignLanguageApp {
     if (!controls) return;
     controls.classList.toggle('active', !!show);
     this._updateDemoViewAngleLabel();
+  }
+
+  _toggleDemoSpeedControl(show) {
+    const control = document.getElementById('demo-speed-control');
+    if (!control) return;
+    control.classList.toggle('active', !!show);
+  }
+
+  _demoFrameInterval(sequenceLength) {
+    if (sequenceLength <= 1) return 500;
+    return this.demoSpeed === 'slow' ? 160 : 80;
   }
 
   _updateDemoViewAngleLabel() {
@@ -658,6 +701,7 @@ class SignLanguageApp {
     if (demoCanvasEl) demoCanvasEl.style.display = 'none';
     if (errorEl) errorEl.style.display = 'none';
     this._toggleDemoViewControls(false);
+    this._toggleDemoSpeedControl(false);
 
     if (!videoEl) return;
 
@@ -1659,6 +1703,7 @@ class SignLanguageApp {
   _onHandResult(hands) {
     if (!Array.isArray(hands)) hands = [];
     this.lastDetectedHands = hands;
+    this._updateHandDebug(hands);
     const isStaticSign = this.state === 'practicing'
       && this.currentSign
       && this._isStaticHandSign(this.currentSign);
@@ -1780,6 +1825,7 @@ class SignLanguageApp {
     }
 
     frameScore = this._scoreWithJamoAi(frameScore, bestNorm, sign);
+    this._updateHandDebug(hands, selected, frameScore);
     this.lastNormalizedPose = bestNorm;
     this.lastPoseHandedness = bestHandedness;
 
@@ -1838,6 +1884,54 @@ class SignLanguageApp {
       `현재 프레임 점수 ${frameScore}점 · 끝내려면 손을 카메라에서 치워주세요.`,
       motionHint,
     ].join('<br>'));
+  }
+
+  _updateHandDebug(hands, selected = null, frameScore = null) {
+    const debug = window.handDebug;
+    if (!debug) return;
+
+    const handData = hands.map((hand, index) => {
+      const isRight = hand.handedness === 'Right';
+      const normalized = normalizeLandmarks(hand.landmarks, isRight);
+      return {
+        index,
+        handedness: hand.handedness,
+        raw: hand.landmarks.map((p, i) => ({
+          i,
+          x: Number(p.x.toFixed(5)),
+          y: Number(p.y.toFixed(5)),
+          z: Number((p.z || 0).toFixed(5)),
+        })),
+        normalized: normalized?.map((p, i) => ({
+          i,
+          x: Number(p[0].toFixed(4)),
+          y: Number(p[1].toFixed(4)),
+          z: Number((p[2] || 0).toFixed(4)),
+        })) || null,
+      };
+    });
+
+    debug.latest = {
+      at: new Date().toISOString(),
+      state: this.state,
+      currentSign: this.currentSign?.name || null,
+      handCount: hands.length,
+      hands: handData,
+      score: frameScore,
+      selected: selected?.map(item => ({
+        score: item.score,
+        handedness: item.handedness,
+        slot: item.slot,
+        perFinger: item.perFinger,
+        breakdown: item.breakdown,
+      })) || [],
+    };
+
+    const now = performance.now();
+    if (debug.enabled && now - this._lastHandDebugAt >= 500) {
+      this._lastHandDebugAt = now;
+      console.log('[handDebug]', debug.latest);
+    }
   }
 
   _updateScoreUI(score) {
@@ -1915,8 +2009,9 @@ class SignLanguageApp {
 
   _weakFingerNames(perFinger) {
     const KO = { thumb: '엄지', index: '검지', middle: '중지', ring: '약지', pinky: '새끼' };
+    const threshold = { thumb: 0.58, index: 0.45, middle: 0.58, ring: 0.58, pinky: 0.58 };
     return Object.entries(perFinger || {})
-      .filter(([, score]) => score < 0.58)
+      .filter(([finger, score]) => score < (threshold[finger] ?? 0.58))
       .sort((a, b) => a[1] - b[1])
       .map(([finger]) => KO[finger]);
   }
@@ -2082,6 +2177,7 @@ class SignLanguageApp {
     }
 
     signData._demoMode = sequence.length > 1 ? 'video' : 'still';
+    this._toggleDemoSpeedControl(sequence.length > 1 && this._isStudyWord(signData));
     let frameIndex = 0;
 
     if (this.refTimer) {
@@ -2106,7 +2202,7 @@ class SignLanguageApp {
     };
 
     draw();
-    this.refTimer = setInterval(draw, sequence.length > 1 ? 80 : 500);
+    this.refTimer = setInterval(draw, this._demoFrameInterval(sequence.length));
   }
 
 drawOpenPoseFrame(feature){

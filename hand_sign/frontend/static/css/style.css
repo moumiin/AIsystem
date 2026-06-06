@@ -225,6 +225,38 @@ body {
 .sign-badge-emoji { font-size: 1rem; }
 .sign-badge-name  { font-size: 0.82rem; color: var(--primary); font-weight: 600; }
 
+.demo-speed-control {
+  display: none;
+  align-items: center;
+  gap: 2px;
+  background: rgba(15,23,42,0.7);
+  border: 1px solid rgba(148,163,184,0.22);
+  border-radius: 8px;
+  padding: 2px;
+}
+
+.demo-speed-control.active {
+  display: flex;
+}
+
+.demo-speed-control button {
+  height: 26px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-sub);
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0 9px;
+  white-space: nowrap;
+}
+
+.demo-speed-control button.active {
+  background: linear-gradient(135deg, var(--primary), var(--cyan-dim));
+  color: #fff;
+}
+
 .canvas-wrapper {
   position: relative;
   width: 100%;

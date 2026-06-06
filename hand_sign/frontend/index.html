@@ -17,7 +17,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>수어 공부!</title>
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="/static/css/style.css?v=8">
+  <link rel="stylesheet" href="/static/css/style.css?v=9">
   <style>
     .category-tabs {
       display: flex;
@@ -260,6 +260,10 @@
             <span class="sign-badge-emoji" id="sign-badge-emoji">👋</span>
             <span class="sign-badge-name" id="sign-badge-name">수어 선택</span>
           </div>
+          <div class="demo-speed-control" id="demo-speed-control" aria-label="시범 재생 속도">
+            <button class="active" data-demo-speed="normal" type="button">보통</button>
+            <button data-demo-speed="slow" type="button">천천히</button>
+          </div>
         </div>
         <div class="canvas-wrapper">
           <canvas id="openpose-demo-canvas" width="640" height="480"></canvas>
@@ -433,12 +437,12 @@
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 
   <script src="/static/js/signs-data.js?v=16"></script>
-  <script src="/static/js/gesture-scorer.js?v=14"></script>
+  <script src="/static/js/gesture-scorer.js?v=15"></script>
   <script src="/static/js/feedback-coach.js?v=1"></script>
   <script src="/static/js/hand-tracker.js?v=8"></script>
   <script src="/static/js/sign-search.js?v=10"></script>
   <script src="/static/js/auth.js?v=2"></script>
-  <script src="/static/js/app.js?v=87"></script>
+  <script src="/static/js/app.js?v=90"></script>
   <script src="/static/js/admin-mode.js?v=3"></script>
 </body>
 </html>
