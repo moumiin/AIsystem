@@ -5,15 +5,15 @@ AI Hub CROWD 키포인트 다운로드 + 숫자/지문자 인덱스 빌드
   01_crowd_morpheme.zip (7.72 MB, key: 39581)  <- 단어 매핑
   01_crowd_keypoint.zip (6.16 GB, key: 39580)  <- 키포인트 (Training)
 
-실행:  py download_crowd.py
+실행:  py download_crowd.py --apikey YOUR_API_KEY
+또는 .env/환경변수에 AIHUB_API_KEY 설정
 """
-import urllib.request, ssl, sys, os, time, zipfile, json, re, math
+import urllib.request, ssl, sys, os, time, zipfile, json, re, math, argparse
 from collections import defaultdict
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 BASE_DIR  = os.path.dirname(os.path.abspath(__file__))
-API_KEY   = "3F0A7E63-0884-45C7-B77B-87B1105FE9C3"
 DATASET   = "103"
 
 MORPH_KEY = "39581"   # 01_crowd_morpheme.zip  7.72 MB
@@ -27,8 +27,21 @@ SEQ_FRAMES = 30
 ROUND_DP   = 3
 
 
+def load_env_file():
+    env_path = os.path.join(os.path.dirname(BASE_DIR), ".env")
+    if not os.path.exists(env_path):
+        return
+    with open(env_path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+
+
 # ── 다운로드 ─────────────────────────────────────────────────────────────────
-def download_file(file_sn, out_path, label):
+def download_file(file_sn, out_path, label, api_key):
     if os.path.exists(out_path):
         size = os.path.getsize(out_path)
         print(f"[skip] {label} 이미 존재: {size/1024/1024:.1f} MB")
@@ -40,7 +53,7 @@ def download_file(file_sn, out_path, label):
 
     ctx = ssl.create_default_context()
     req = urllib.request.Request(url, headers={
-        "apikey": API_KEY, "User-Agent": "aihubshell/0.6",
+        "apikey": api_key, "User-Agent": "aihubshell/0.6",
     })
     try:
         r = urllib.request.urlopen(req, timeout=60, context=ctx)
@@ -235,10 +248,18 @@ def merge_and_save(new_index):
 
 # ── 메인 ─────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
+    load_env_file()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--apikey", default=os.getenv("AIHUB_API_KEY"), help="AI Hub API Key")
+    args = parser.parse_args()
+    if not args.apikey:
+        print("ERROR: --apikey 또는 AIHUB_API_KEY 환경변수가 필요합니다.")
+        sys.exit(1)
+
     print("=" * 60)
     print("STEP 1: crowd_morpheme 다운로드 (7.72 MB)")
     print("=" * 60)
-    ok = download_file(MORPH_KEY, MORPH_OUT, "crowd_morpheme")
+    ok = download_file(MORPH_KEY, MORPH_OUT, "crowd_morpheme", args.apikey)
     if not ok:
         sys.exit(1)
 
@@ -249,7 +270,7 @@ if __name__ == "__main__":
     print("\n" + "=" * 60)
     print("STEP 2: crowd_keypoint 다운로드 (6.16 GB) — 시간이 걸립니다")
     print("=" * 60)
-    ok2 = download_file(KP_KEY, KP_OUT, "crowd_keypoint")
+    ok2 = download_file(KP_KEY, KP_OUT, "crowd_keypoint", args.apikey)
     if not ok2:
         print("키포인트 다운로드 실패"); sys.exit(1)
 

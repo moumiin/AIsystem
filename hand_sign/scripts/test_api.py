@@ -2,7 +2,7 @@ import urllib.request, json, sys
 sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 for q in ['1','2','3','10','100','1000','가족','안녕하세요']:
     body = json.dumps({'query': q}).encode('utf-8')
-    req = urllib.request.Request('http://localhost:8000/api/gemini-search',
+    req = urllib.request.Request('http://localhost:8000/api/sign-search',
         data=body, headers={'Content-Type': 'application/json'}, method='POST')
     try:
         resp = urllib.request.urlopen(req)

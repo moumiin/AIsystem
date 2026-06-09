@@ -29,13 +29,13 @@ class SignSearch {
   async _search(query) {
     if (!query || this.isLoading) return;
     this.isLoading = true;
-    this._setStatus('loading', `"${query}" 검색 중...`);
+    this._setStatus('loading', `"${query}" 이름 수어 준비 중...`);
 
     try {
       const response = await fetch('/api/sign-search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query }),
+        body: JSON.stringify({ query, mode: 'name' }),
       });
 
       if (!response.ok) {
@@ -82,7 +82,7 @@ class SignSearch {
     if (stepsEl) {
       stepsEl.innerHTML = `
         <div class="sign-search-source-label">
-          <span style="color:#10b981">지문자 분해: ${jamoList}</span>
+          <span style="color:#10b981">이름 수어 순서: ${jamoList}</span>
         </div>
         <div class="fingerspell-nav">
           <button id="seq-prev" ${index === 0 ? 'disabled' : ''}>◀</button>
@@ -94,7 +94,7 @@ class SignSearch {
     }
 
     this._renderSign(query, step.landmarks, { name: step.name });
-    this._setStatus('success', `"${query}" 지문자 ${index + 1}/${total}: ${step.jamo}`);
+    this._setStatus('success', `"${query}" 이름 수어 ${index + 1}/${total}: ${step.jamo}`);
   }
 
   _stepSeq(direction) {

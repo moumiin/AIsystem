@@ -8,6 +8,9 @@
   ① 지문자 DB (ㄱ~ㅎ, 모음)
   ② AI Hub 실제 수어 데이터 (4000개 단어/문장)
   ③ 지문자 분해 fallback (모든 한국어 단어)
+
+상단 입력창은 이름 학습용이므로 mode="name" 요청 시 AI Hub 단어 검색을 건너뛰고
+지문자 분해만 사용합니다. 카테고리 카드의 수어 조회는 기존 검색 순서를 유지합니다.
 """
 import os, sys
 from fastapi import FastAPI, HTTPException
@@ -83,6 +86,7 @@ def decompose_korean(text: str) -> list:
 # ── 검색 엔드포인트 ────────────────────────────────────────────────────────
 class SearchRequest(BaseModel):
     query: str
+    mode: str | None = None
 
 NUMBER_KOR = {
     '0':'영','1':'일','2':'이','3':'삼','4':'사',
@@ -94,6 +98,7 @@ NUMBER_KOR = {
 @app.post("/api/sign-search")
 async def sign_search(req: SearchRequest):
     q = req.query.strip()
+    is_name_mode = (req.mode or "").lower() == "name"
 
     # ① 지문자 검증 DB
     jamo = find_jamo(q)
@@ -106,7 +111,8 @@ async def sign_search(req: SearchRequest):
         }
 
     # ② AI Hub 키포인트 인덱스
-    if aihub_available():
+    # 이름 학습에서는 사람 이름을 일반 단어 수어로 오인하지 않도록 지문자만 사용합니다.
+    if not is_name_mode and aihub_available():
         pose = aihub_lookup_pose(q)
         if pose:
             print(f"[AIHub-KP] '{q}' → 키포인트 포즈 반환")

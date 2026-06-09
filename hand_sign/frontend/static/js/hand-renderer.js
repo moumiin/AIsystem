@@ -134,6 +134,42 @@ class HandRenderer {
     }));
     this.palmMesh.visible = false;
     this.handGroup.add(this.palmMesh);
+
+    this.secondaryJoints = [];
+    for (let i = 0; i < 21; i++) {
+      const isTip   = [4,8,12,16,20].includes(i);
+      const isWrist = i === 0;
+      const isMCP   = [5,9,13,17].includes(i);
+      const r = isWrist ? 0.050 : isTip ? 0.032 : isMCP ? 0.028 : 0.022;
+      const geo = new THREE.SphereGeometry(r, 12, 10);
+      const mat = new THREE.MeshPhongMaterial({ color: 0xff8a3d, shininess: 90 });
+      if (isTip) mat.emissive = new THREE.Color(0x331600);
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.visible = false;
+      this.handGroup.add(mesh);
+      this.secondaryJoints.push(mesh);
+    }
+
+    this.secondaryBones = [];
+    for (let i = 0; i < HAND_BONE_CONNECTIONS.length; i++) {
+      const [rTop, rBot] = _boneRadius[i];
+      const geo = new THREE.CylinderGeometry(rTop, rBot, 1, 8);
+      const mat = new THREE.MeshPhongMaterial({ color: 0xffb86b, shininess: 60 });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.visible = false;
+      this.handGroup.add(mesh);
+      this.secondaryBones.push(mesh);
+    }
+
+    const secondaryPalmGeo = new THREE.BufferGeometry();
+    secondaryPalmGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(21 * 3), 3));
+    secondaryPalmGeo.setIndex(PALM_TRIS);
+    this.secondaryPalmMesh = new THREE.Mesh(secondaryPalmGeo, new THREE.MeshPhongMaterial({
+      color: 0xd97706, transparent: true, opacity: 0.18,
+      side: THREE.DoubleSide, depthWrite: false,
+    }));
+    this.secondaryPalmMesh.visible = false;
+    this.handGroup.add(this.secondaryPalmMesh);
   }
 
   // ── 뼈대 방향·길이 업데이트 ──────────────────────────────────────────────
@@ -166,6 +202,8 @@ class HandRenderer {
     if (flipX && flipZ) src = landmarks.map(([x,y,z]) => [-x, y, -z]);
     else if (flipX)     src = landmarks.map(([x,y,z]) => [-x, y,  z]);
     else if (flipZ)     src = landmarks.map(([x,y,z]) => [ x, y, -z]);
+
+    this._hideSecondaryHand();
 
     // 1) 경계 박스 계산
     let minX=Infinity,minY=Infinity,minZ=Infinity;
@@ -201,6 +239,57 @@ class HandRenderer {
   }
 
   // ── 손가락별 색상 피드백 ──────────────────────────────────────────────────
+  setHandPose(handPose) {
+    if (!handPose) return;
+    const mirrorPose = pose => pose.map(([x, y, z]) => [-x, y, z]);
+    const left = Array.isArray(handPose.left) ? handPose.left : null;
+    const right = Array.isArray(handPose.right) ? mirrorPose(handPose.right) : null;
+    const primary = right || left;
+    if (!primary) return;
+
+    if (!left || !right) {
+      this.setPose(primary);
+      return;
+    }
+
+    this.currentPose = primary;
+    const apply = (src, joints, bones, palmMesh, offsetX) => {
+      let minX=Infinity,minY=Infinity,minZ=Infinity;
+      let maxX=-Infinity,maxY=-Infinity,maxZ=-Infinity;
+      for (const [x,y,z] of src) {
+        if (x<minX) minX=x; if (x>maxX) maxX=x;
+        if (y<minY) minY=y; if (y>maxY) maxY=y;
+        if (z<minZ) minZ=z; if (z>maxZ) maxZ=z;
+      }
+      const cx = (minX+maxX)/2, cy = (minY+maxY)/2, cz = (minZ+maxZ)/2;
+      const maxDim = Math.max(maxX-minX, maxY-minY, maxZ-minZ, 0.1);
+      const scale = 1.55 / maxDim;
+      const positions = src.map(([x,y,z]) =>
+        new THREE.Vector3((x-cx)*scale + offsetX, (y-cy)*scale, (z-cz)*scale)
+      );
+
+      joints.forEach((j, i) => { j.position.copy(positions[i]); j.visible = true; });
+      HAND_BONE_CONNECTIONS.forEach(([a,b], i) => {
+        this._orientBone(bones[i], positions[a], positions[b]);
+      });
+
+      const posAttr = palmMesh.geometry.attributes.position;
+      positions.forEach((p,i) => posAttr.setXYZ(i, p.x, p.y, p.z));
+      posAttr.needsUpdate = true;
+      palmMesh.geometry.computeVertexNormals();
+      palmMesh.visible = true;
+    };
+
+    apply(right, this.joints, this.bones, this.palmMesh, -0.95);
+    apply(left, this.secondaryJoints, this.secondaryBones, this.secondaryPalmMesh, 0.95);
+  }
+
+  _hideSecondaryHand() {
+    this.secondaryJoints?.forEach(j => j.visible = false);
+    this.secondaryBones?.forEach(b => b.visible = false);
+    if (this.secondaryPalmMesh) this.secondaryPalmMesh.visible = false;
+  }
+
   setFingerColors(scores) {
     for (const [finger, score] of Object.entries(scores)) {
       const color = score > 0.75 ? COLOR_GOOD : score > 0.45 ? COLOR_WARN : COLOR_BAD;
@@ -226,12 +315,17 @@ class HandRenderer {
   resetColors() {
     this.joints.forEach(j => j.material.color.setHex(COLOR_DEFAULT));
     this.bones.forEach(b  => b.material.color.setHex(COLOR_BONE_DEF));
+    this.secondaryJoints?.forEach(j => j.material.color.setHex(0xff8a3d));
+    this.secondaryBones?.forEach(b  => b.material.color.setHex(0xffb86b));
   }
 
   setVisible(v) {
     this.joints.forEach(j => j.visible = v);
     this.bones.forEach(b  => b.visible = v);
     if (this.palmMesh) this.palmMesh.visible = v && !!this.currentPose;
+    this.secondaryJoints?.forEach(j => j.visible = false);
+    this.secondaryBones?.forEach(b => b.visible = false);
+    if (this.secondaryPalmMesh) this.secondaryPalmMesh.visible = false;
   }
 
   // ── 렌더링 루프 ──────────────────────────────────────────────────────────

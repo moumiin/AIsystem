@@ -14,32 +14,29 @@ class SignLanguageApp {
     this.lastDetectedHands = [];
     this.lastNormalizedPose = null;
     this.lastPoseHandedness = null;
+    this.lastNormalizedHands = [];
+    this.lastBodyPose = null;
+    this.motionBuffer = [];
+    this.motionHandBuffer = [];
+    this.lastMotionSampleAt = 0;
+    this.modalMode = null;
 
     this.SUCCESS_SCORE  = 65;
     this.SUCCESS_FRAMES = 45;
     this.STAGE_SUCCESS_FRAMES = 18;
+    this.MOTION_SUCCESS_SCORE = 72;
+    this.MOTION_SUCCESS_FRAMES = 12;
+    this.MOTION_SAMPLE_MS = 120;
     this.isSearchMode   = false;
 
     this._initUI();
     this._initRenderer();
-    this._renderGrid('numbers');
-    this._setStatus('위 검색창에서 단어를 검색하거나 아래 목록에서 수화를 선택하세요 👇');
+    this._renderJamoGrid('consonants');
+    this._setStatus('위 입력창에 이름을 넣거나 아래 목록에서 수화를 선택하세요 👇');
 
     // 수어 검색 초기화
     this.signSearch = new SignSearch(this);
 
-    // 자음/모음 데이터 로드
-    this._loadJamos();
-  }
-
-  async _loadJamos() {
-    try {
-      const res = await fetch('/api/jamos');
-      const jamos = await res.json();
-      SIGNS.push(...jamos);
-    } catch(e) {
-      console.warn('자음/모음 로드 실패', e);
-    }
   }
 
   _initUI() {
@@ -73,8 +70,17 @@ class SignLanguageApp {
       this._startCamera();
     });
 
+
     document.getElementById('modal-next-btn').addEventListener('click', () => {
       this._closeModal();
+      if (this.modalMode === 'stage') {
+        this.modalMode = null;
+        if (this._advanceSequenceStage()) {
+          this.state = this.tracker?.isRunning ? 'practicing' : 'selected';
+        }
+        return;
+      }
+
       if (this.isSearchMode) {
         const seq    = this.signSearch?._sequence;
         const isSeq  = seq?.length > 1;
@@ -93,6 +99,19 @@ class SignLanguageApp {
     });
     document.getElementById('modal-retry-btn').addEventListener('click', () => {
       this._closeModal();
+      if (this.modalMode === 'stage') {
+        this.modalMode = null;
+        this.successFrames = 0;
+        this.bestScore = 0;
+        if (this.currentSign) {
+          this.currentSign._stagePassFrames = 0;
+          const currentIndex = this.currentSign._currentStageIndex ?? 0;
+          this._showSequenceStage(this.currentSign, currentIndex);
+        }
+        if (this.tracker?.isRunning) this.state = 'practicing';
+        return;
+      }
+
       if (this.isSearchMode) {
         const seq    = this.signSearch?._sequence;
         const isSeq  = seq?.length > 1;
@@ -126,7 +145,7 @@ class SignLanguageApp {
 
     const jamoSigns = SIGNS.filter(s => s.category === 'jamo');
     const sorted = order
-      .map(ch => jamoSigns.find(s => s.emoji === ch))
+      .map(ch => jamoSigns.find(s => (s.emoji || s.name) === ch))
       .filter(Boolean);
 
     const grid = document.getElementById('sign-grid');
@@ -134,7 +153,7 @@ class SignLanguageApp {
       <button class="sign-btn ${this.currentSign?.id === sign.id ? 'active' : ''}"
               data-id="${sign.id}"
               onclick="app.selectSign('${sign.id}')">
-        <span class="btn-emoji">${sign.emoji}</span>
+        <span class="btn-emoji">${sign.emoji || sign.name}</span>
         <span class="btn-label">${sign.name}</span>
       </button>`).join('');
   }
@@ -147,7 +166,6 @@ class SignLanguageApp {
       <button class="sign-btn ${this.currentSign?.id === sign.id ? 'active' : ''}"
               data-id="${sign.id}"
               onclick="app.selectSign('${sign.id}')">
-        <span class="btn-emoji">${sign.emoji}</span>
         <span class="btn-label">${sign.name}</span>
       </button>
     `).join('');
@@ -174,7 +192,15 @@ class SignLanguageApp {
     if (stepsEl) stepsEl.style.display = 'none';
 
     // AI Hub 단어 매핑이 있으면 자동 로드
-    if (sign.aihubWord) {
+    if (sign.category === 'jamo' && !sign.pose) {
+      this._setupSignContext(sign);
+      this.renderer.setVisible(false);
+      this._setDemoStage(null);
+      this._setStatus(`"${sign.name}" pose를 signs-data.js에 추가해주세요`);
+      return;
+    }
+
+    if (!sign.pose || sign.aihubWord) {
       this._fetchAndApplyAihub(sign);
       return;
     }
@@ -183,6 +209,10 @@ class SignLanguageApp {
   }
 
   async _fetchAndApplyAihub(sign) {
+    const queries = this._getLookupQueries(sign);
+    const requestId = Symbol(queries.join('|'));
+    sign._loadRequestId = requestId;
+
     // 캐시된 데이터가 있으면 바로 적용
     if (sign._cachedVideoData) {
       this._setupSignContext(sign);
@@ -191,7 +221,7 @@ class SignLanguageApp {
       if (this.tracker?.isRunning) this.state = 'practicing';
       return;
     }
-    if (sign.pose) {
+    if (sign.pose && !sign.aihubWord) {
       this._applySign(sign);
       return;
     }
@@ -203,30 +233,75 @@ class SignLanguageApp {
     this.renderer.setVisible(false);
 
     try {
-      const resp = await fetch('/api/sign-search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: sign.aihubWord }),
-      });
-      if (!resp.ok) throw new Error('없음');
-      const data = await resp.json();
+      let data = null;
+      for (const query of queries) {
+        const resp = await fetch('/api/sign-search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query }),
+        });
+        if (resp.ok) {
+          data = await resp.json();
+          break;
+        }
+      }
+      if (!data) throw new Error('없음');
+      if (sign._loadRequestId !== requestId || this.currentSign?.id !== sign.id) return;
 
       sign.description = data.description || sign.description || sign.name;
       sign.hint        = data.hint        || sign.hint        || '수어 동작을 따라해보세요';
 
-      if (data.landmarks) {
-        sign.pose = data.landmarks;
-        // Only use sequence for keypoint frame arrays, not fingerspell jamo objects
-        sign.sequence = Array.isArray(data.sequence?.[0]) ? data.sequence : null;
+      const pose = this._normalizePoseFrame(data.landmarks);
+      if (pose) {
+        sign.pose = pose;
+        const sequence = this._normalizePoseSequence(data.sequence);
+        sign.sequence = sequence.length > 0 ? sequence : null;
+        sign._sequenceStages = null;
         this._applySign(sign);
       } else {
         throw new Error('포즈 없음');
       }
     } catch(e) {
+      if (sign._loadRequestId !== requestId || this.currentSign?.id !== sign.id) return;
       document.getElementById('sign-description').textContent = sign.description || 'AI Hub 데이터 없음';
       this._setStatus(`⚠️ "${sign.name}" 데이터를 불러올 수 없습니다`);
       this.renderer.setVisible(false);
     }
+  }
+
+  _getLookupQueries(sign) {
+    const candidates = [
+      sign.aihubWord,
+      sign.name,
+      ...(sign.name || '').split(/[\/,]/),
+    ];
+
+    return [...new Set(candidates
+      .map(value => String(value || '').trim())
+      .filter(Boolean))];
+  }
+
+  _normalizePoseSequence(sequence) {
+    if (!Array.isArray(sequence)) return [];
+    return sequence
+      .map(frame => this._normalizePoseFrame(frame))
+      .filter(Boolean);
+  }
+
+  _normalizePoseFrame(frame) {
+    if (!Array.isArray(frame) || frame.length < 21) return null;
+
+    const points = frame.map(point => {
+      if (Array.isArray(point)) return point.slice(0, 3).map(Number);
+      if (typeof point === 'string') return point.trim().split(/\s+/).slice(0, 3).map(Number);
+      if (point && typeof point === 'object') return [point.x, point.y, point.z || 0].map(Number);
+      return [];
+    });
+
+    if (points.length < 21 || points.some(point => point.length < 3 || point.some(value => !Number.isFinite(value)))) {
+      return null;
+    }
+    return points;
   }
 
   _setupSignContext(sign) {
@@ -236,6 +311,9 @@ class SignLanguageApp {
     this.successFrames = 0;
     this.bestScore     = 0;
     this.scoreBuffer   = [];
+    this.motionBuffer = [];
+    this.motionHandBuffer = [];
+    this.lastMotionSampleAt = 0;
     this._updateScoreUI(0);
     document.getElementById('sign-badge-name').textContent  = sign.name;
     document.getElementById('sign-badge-emoji').textContent = sign.emoji || '🤟';
@@ -256,17 +334,113 @@ class SignLanguageApp {
     this.renderer.setVisible(true);
     this.renderer.resetColors();
     const FLIP_X_JAMOS = ['ㅓ (어)','ㅕ (여)','ㅔ (에)','ㅖ (예)'];
-    this.renderer.setPose(sign.pose, FLIP_X_JAMOS.includes(sign.name));
+    if (sign.handPose && (sign.handPose.left || sign.handPose.right)) {
+      this.renderer.setHandPose(sign.handPose);
+    } else {
+      this.renderer.setPose(sign.pose, FLIP_X_JAMOS.includes(sign.name));
+    }
     this.renderer._autoRotate = false;
     this.renderer._rotY = 0;
     this.renderer.handGroup.rotation.y = 0;
 
     this._updateScoreUI(0);
 
-    if (sign.sequence?.length > 0) {
+    if (this._usesMotionScoring(sign) && sign.motionSequence?.length > 1) {
+      sign.sequence = sign.motionSequence;
+      if (Array.isArray(sign.motionHandSequence)) sign.handSequence = sign.motionHandSequence;
+      this._startStageAnimation(sign);
+      this._setStatus('동작 전체를 따라 하면 자동으로 점수가 계산됩니다.');
+    } else if (sign.sequence?.length > 0) {
       this._startStageAnimation(sign);
     } else {
       this._setDemoStage(null);
+    }
+  }
+
+  _usesMotionScoring(sign) {
+    if (!sign || sign.category === 'jamo' || sign.source === 'fingerspell') return false;
+    if (Array.isArray(sign.motionSequence) && sign.motionSequence.length > 1) return true;
+    if (Array.isArray(sign.motionHandSequence) && sign.motionHandSequence.length > 1) return true;
+    return sign.source === 'aihub' && Array.isArray(sign.sequence) && sign.sequence.length > 1;
+  }
+
+  _currentHandFrame() {
+    const frame = { left: null, right: null };
+    for (const hand of this.lastNormalizedHands) {
+      if (!Array.isArray(hand.pose) || hand.pose.length < 21) continue;
+      const side = hand.handedness === 'Left' ? 'left' : 'right';
+      frame[side] = hand.pose;
+    }
+    return frame.left || frame.right ? frame : null;
+  }
+
+  _appendMotionFrame() {
+    const now = Date.now();
+    if (now - this.lastMotionSampleAt < this.MOTION_SAMPLE_MS) return;
+
+    const handFrame = this._currentHandFrame();
+    const primaryPose = handFrame?.right || handFrame?.left || this.lastNormalizedPose;
+    if (!Array.isArray(primaryPose) || primaryPose.length < 21) return;
+
+    this.lastMotionSampleAt = now;
+    this.motionBuffer.push(primaryPose);
+    if (handFrame) this.motionHandBuffer.push(handFrame);
+
+    const refLen = this._getMotionReference(this.currentSign).primary.length || 30;
+    const maxLen = Math.max(refLen * 3, 36);
+    if (this.motionBuffer.length > maxLen) this.motionBuffer.shift();
+    if (this.motionHandBuffer.length > maxLen) this.motionHandBuffer.shift();
+  }
+
+  _getMotionReference(sign) {
+    const hand = Array.isArray(sign?.motionHandSequence) && sign.motionHandSequence.length > 1
+      ? sign.motionHandSequence
+      : Array.isArray(sign?.handSequence) && sign.handSequence.length > 1
+        ? sign.handSequence
+        : null;
+    const primary = Array.isArray(sign?.motionSequence) && sign.motionSequence.length > 1
+      ? sign.motionSequence
+      : Array.isArray(sign?.sequence) && sign.sequence.length > 1
+        ? sign.sequence
+        : [];
+    return { hand, primary };
+  }
+
+  _scoreMotionPractice() {
+    this._appendMotionFrame();
+
+    const ref = this._getMotionReference(this.currentSign);
+    let result = ref.hand
+      ? computeTwoHandSequenceScore(this.motionHandBuffer, ref.hand)
+      : null;
+    let score = result?.score ?? 0;
+
+    if (!result && ref.primary.length > 1) {
+      score = computeSequenceScore(this.motionBuffer, ref.primary);
+    }
+
+    const primaryRef = ref.primary[Math.min(ref.primary.length - 1, Math.floor(ref.primary.length / 2))] || this.currentSign.pose;
+    const perFinger = primaryRef && this.lastNormalizedPose
+      ? computePerFingerScores(this.lastNormalizedPose, primaryRef)
+      : { thumb: 0, index: 0, middle: 0, ring: 0, pinky: 0 };
+
+    this._updateScoreUI(score);
+    this.renderer.setFingerColors(perFinger);
+    if (this.tracker) this.tracker.setFingerColors(perFinger, this.lastPoseHandedness || 'Right');
+    if (score > this.bestScore) this.bestScore = score;
+
+    if (score >= this.MOTION_SUCCESS_SCORE) {
+      this.successFrames++;
+      const pct = Math.min(100, Math.round((this.successFrames / this.MOTION_SUCCESS_FRAMES) * 100));
+      if (this.successFrames >= this.MOTION_SUCCESS_FRAMES) {
+        this._triggerSuccess();
+        return;
+      }
+      this._setStatus(`동작 흐름이 맞고 있어요. ${pct}%`);
+    } else {
+      this.successFrames = Math.max(0, this.successFrames - 1);
+      const needMore = this.motionBuffer.length < 8 ? '동작을 끝까지 보여주세요.' : '시작-중간-끝 흐름을 다시 맞춰보세요.';
+      this._setStatus(`${needMore} 현재 동작 점수 ${score}점`);
     }
   }
 
@@ -294,7 +468,12 @@ class SignLanguageApp {
 
     if (this.currentSign === sign) {
       this.currentSign.pose = stage.frame;
-      this.renderer.setPose(stage.frame);
+      if (stage.handFrame && (stage.handFrame.left || stage.handFrame.right)) {
+        this.currentSign.handPose = stage.handFrame;
+        this.renderer.setHandPose(stage.handFrame);
+      } else {
+        this.renderer.setPose(stage.frame);
+      }
       this._updateScoreUI(0);
       this._setDemoStage({
         index: stageIndex,
@@ -351,7 +530,10 @@ class SignLanguageApp {
 
         const frame = sign.sequence[idx];
         if (Array.isArray(frame) && frame.length >= 21) {
-          stages.push({ frame, sourceIndex: idx });
+          const handFrame = Array.isArray(sign.handSequence)
+            ? sign.handSequence[idx]
+            : null;
+          stages.push({ frame, handFrame, sourceIndex: idx });
         }
       }
 
@@ -380,6 +562,20 @@ class SignLanguageApp {
     ).join('');
   }
 
+  _stepSequenceStage(direction) {
+    const sign = this.currentSign;
+    const stages = this._getSequenceStages(sign);
+    if (!sign || stages.length <= 1) return false;
+
+    const currentIndex = sign._currentStageIndex ?? 0;
+    const nextIndex = Math.max(0, Math.min(stages.length - 1, currentIndex + direction));
+    if (nextIndex === currentIndex) return false;
+
+    this._showSequenceStage(sign, nextIndex, stages);
+    this._setStatus(`단계 ${nextIndex + 1}/${stages.length}`);
+    return true;
+  }
+
   _advanceSequenceStage() {
     const sign = this.currentSign;
     const stages = this._getSequenceStages(sign);
@@ -398,6 +594,16 @@ class SignLanguageApp {
 
     if (Array.isArray(sign.sequence) && sign.sequence.length > 0) {
       if (Array.isArray(sign._currentStageFrame) && sign._currentStageFrame.length >= 21) {
+        const stages = this._getSequenceStages(sign);
+        const currentIndex = sign._currentStageIndex ?? 0;
+        const refs = [];
+
+        for (let offset = -1; offset <= 1; offset++) {
+          const stage = stages[currentIndex + offset];
+          if (stage?.frame) refs.push(stage.frame);
+        }
+
+        if (refs.length > 0) return refs;
         return [sign._currentStageFrame];
       }
 
@@ -408,6 +614,88 @@ class SignLanguageApp {
     }
 
     return Array.isArray(sign.pose) && sign.pose.length >= 21 ? [sign.pose] : [];
+  }
+
+  _getRefVariants(refPose) {
+    if (!Array.isArray(refPose) || refPose.length < 21) return [];
+
+    const variants = [
+      refPose,
+      refPose.map(([x, y, z]) => [-x, y, z]),
+      refPose.map(([x, y, z]) => [x, -y, z]),
+      refPose.map(([x, y, z]) => [-x, -y, z]),
+    ];
+
+    return variants;
+  }
+
+  _getCurrentHandRef(sign) {
+    if (!sign) return null;
+    if (Array.isArray(sign.handSequence) && sign.handSequence.length > 0) {
+      const stages = this._getSequenceStages(sign);
+      const currentIndex = sign._currentStageIndex ?? 0;
+      return stages[currentIndex]?.handFrame || sign.handPose || null;
+    }
+    return sign.handPose || null;
+  }
+
+  _scoreAgainstVariants(userPose, refPose) {
+    let bestScore = -1;
+    let bestRef = null;
+    for (const variant of this._getRefVariants(refPose)) {
+      const score = computeScore(userPose, variant);
+      if (score > bestScore) {
+        bestScore = score;
+        bestRef = variant;
+      }
+    }
+    return { score: bestScore, ref: bestRef };
+  }
+
+  _scoreTwoHandPose(handRef) {
+    const refs = {
+      left: Array.isArray(handRef?.left) ? handRef.left : null,
+      right: Array.isArray(handRef?.right) ? handRef.right : null,
+    };
+    const requiredSides = Object.entries(refs).filter(([, ref]) => ref);
+    if (requiredSides.length < 2) return null;
+
+    const userHands = {};
+    for (const hand of this.lastNormalizedHands) {
+      const side = hand.handedness === 'Left' ? 'left' : 'right';
+      if (Array.isArray(hand.pose) && hand.pose.length >= 21) userHands[side] = hand.pose;
+    }
+
+    const scores = {};
+    const refsUsed = {};
+    for (const [side, ref] of requiredSides) {
+      const userPose = userHands[side];
+      if (!userPose) {
+        return {
+          score: 0,
+          perFinger: { thumb: 0, index: 0, middle: 0, ring: 0, pinky: 0 },
+          handedness: side === 'left' ? 'Left' : 'Right',
+          missingSide: side,
+        };
+      }
+
+      const result = this._scoreAgainstVariants(userPose, ref);
+      scores[side] = result.score;
+      refsUsed[side] = result.ref;
+    }
+
+    const primarySide = scores.right <= scores.left ? 'right' : 'left';
+    const primaryHandedness = primarySide === 'left' ? 'Left' : 'Right';
+    const primaryUser = userHands[primarySide];
+    const primaryRef = refsUsed[primarySide];
+
+    return {
+      score: Math.min(...Object.values(scores)),
+      perFinger: computePerFingerScores(primaryUser, primaryRef),
+      handedness: primaryHandedness,
+      norm: primaryUser,
+      sideScores: scores,
+    };
   }
 
   async _startCamera() {
@@ -421,7 +709,7 @@ class SignLanguageApp {
       const videoEl   = document.getElementById('webcam');
       const overlayEl = document.getElementById('overlay-canvas');
 
-      this.tracker = new HandTracker(videoEl, overlayEl, r => this._onHandResult(r));
+      this.tracker = new HandTracker(videoEl, overlayEl, (r, bodyPose) => this._onHandResult(r, bodyPose));
       await this.tracker.start();
 
       document.getElementById('webcam-placeholder').style.display = 'none';
@@ -442,12 +730,57 @@ class SignLanguageApp {
     }
   }
 
-  _onHandResult(hands) {
+  _normalizeBodyPose(poseLandmarks) {
+    if (!Array.isArray(poseLandmarks) || poseLandmarks.length < 17) return null;
+
+    const ids = {
+      nose: 0,
+      leftShoulder: 11,
+      rightShoulder: 12,
+      leftElbow: 13,
+      rightElbow: 14,
+      leftWrist: 15,
+      rightWrist: 16,
+    };
+    const left = poseLandmarks[ids.leftShoulder];
+    const right = poseLandmarks[ids.rightShoulder];
+    if (!left || !right) return null;
+
+    const cx = (left.x + right.x) / 2;
+    const cy = (left.y + right.y) / 2;
+    const cz = ((left.z || 0) + (right.z || 0)) / 2;
+    const shoulderWidth = Math.sqrt(
+      (left.x - right.x) ** 2 +
+      (left.y - right.y) ** 2 +
+      ((left.z || 0) - (right.z || 0)) ** 2
+    );
+    const scale = shoulderWidth > 0.01 ? shoulderWidth : 0.25;
+
+    const result = {};
+    for (const [name, idx] of Object.entries(ids)) {
+      const p = poseLandmarks[idx];
+      if (!p || p.visibility < 0.25) {
+        result[name] = null;
+        continue;
+      }
+      result[name] = [
+        (p.x - cx) / scale,
+        -(p.y - cy) / scale,
+        -((p.z || 0) - cz) / scale,
+        p.visibility ?? 1,
+      ];
+    }
+    return result;
+  }
+
+  _onHandResult(hands, bodyPose = null) {
     if (!Array.isArray(hands)) hands = [];
     this.lastDetectedHands = hands;
+    this.lastBodyPose = this._normalizeBodyPose(bodyPose);
     if (!hands || hands.length === 0) {
       this.lastNormalizedPose = null;
       this.lastPoseHandedness = null;
+      this.lastNormalizedHands = [];
       this._updateScoreUI(0);
       if (this.state === 'practicing') {
         this._setStatus('✋ 카메라에 손을 보여주세요');
@@ -456,16 +789,45 @@ class SignLanguageApp {
       return;
     }
 
-    const adminHand = hands.find(h => h?.landmarks);
-    if (adminHand) {
-      const adminNorm = normalizeLandmarks(adminHand.landmarks, adminHand.handedness === 'Right');
-      if (adminNorm) {
-        this.lastNormalizedPose = adminNorm;
-        this.lastPoseHandedness = adminHand.handedness;
-      }
+    const normalizedHands = hands
+      .filter(hand => hand?.landmarks)
+      .map(hand => ({
+        handedness: hand.handedness,
+        pose: normalizeLandmarks(hand.landmarks, hand.handedness === 'Right'),
+      }))
+      .filter(hand => Array.isArray(hand.pose) && hand.pose.length >= 21)
+      .sort((a, b) => {
+        if (a.handedness === b.handedness) return 0;
+        return a.handedness === 'Right' ? -1 : 1;
+      });
+
+    this.lastNormalizedHands = normalizedHands;
+    if (normalizedHands.length > 0) {
+      const primary = normalizedHands.find(hand => hand.handedness === 'Right') || normalizedHands[0];
+      this.lastNormalizedPose = primary.pose;
+      this.lastPoseHandedness = primary.handedness;
     }
 
     if (this.state !== 'practicing' || !this.currentSign) return;
+
+    if (this._usesMotionScoring(this.currentSign)) {
+      this._scoreMotionPractice();
+      return;
+    }
+
+    const twoHandRef = this._getCurrentHandRef(this.currentSign);
+    const twoHandScore = this._scoreTwoHandPose(twoHandRef);
+    if (twoHandScore) {
+      this._applyPracticeScore({
+        score: twoHandScore.score,
+        norm: twoHandScore.norm || this.lastNormalizedPose,
+        perFinger: twoHandScore.perFinger,
+        handedness: twoHandScore.handedness,
+        missingSide: twoHandScore.missingSide,
+        sideScores: twoHandScore.sideScores,
+      });
+      return;
+    }
 
     let bestScore = -1;
     let bestNorm  = null;
@@ -483,10 +845,12 @@ class SignLanguageApp {
       let score = -1;
       let scoreRef = null;
       for (const ref of refs) {
-        const candidate = computeScore(norm, ref);
-        if (candidate > score) {
-          score = candidate;
-          scoreRef = ref;
+        for (const variant of this._getRefVariants(ref)) {
+          const candidate = computeScore(norm, variant);
+          if (candidate > score) {
+            score = candidate;
+            scoreRef = variant;
+          }
         }
       }
       if (!scoreRef) continue;
@@ -510,9 +874,29 @@ class SignLanguageApp {
       }
     }
 
-    if (!bestNorm) return;
-    this.lastNormalizedPose = bestNorm;
-    this.lastPoseHandedness = bestHandedness;
+    this._applyPracticeScore({
+      score: bestScore,
+      norm: bestNorm,
+      perFinger: bestPerFinger,
+      handedness: bestHandedness,
+    });
+  }
+
+  _applyPracticeScore(result) {
+    const bestScore = Math.max(0, result.score || 0);
+    const bestPerFinger = result.perFinger || { thumb: 0, index: 0, middle: 0, ring: 0, pinky: 0 };
+    const bestHandedness = result.handedness || 'Right';
+    const bestNorm = result.norm || this.lastNormalizedPose;
+
+    if (bestNorm) {
+      this.lastNormalizedPose = bestNorm;
+      this.lastPoseHandedness = bestHandedness;
+      if (this.lastNormalizedHands.length > 0) {
+        this.lastNormalizedHands = this.lastNormalizedHands.map(hand =>
+          hand.handedness === bestHandedness ? { ...hand, pose: bestNorm } : hand
+        );
+      }
+    }
 
     this.scoreBuffer.push(bestScore);
     if (this.scoreBuffer.length > 10) this.scoreBuffer.shift();
@@ -526,6 +910,14 @@ class SignLanguageApp {
 
     if (smoothScore > this.bestScore) this.bestScore = smoothScore;
 
+    if (result.missingSide) {
+      this.successFrames = 0;
+      if (this.currentSign) this.currentSign._stagePassFrames = 0;
+      const label = result.missingSide === 'left' ? '왼손' : '오른손';
+      this._setStatus(`양손 수어입니다. ${label}도 함께 보여주세요.`);
+      return;
+    }
+
     if (smoothScore >= this.SUCCESS_SCORE) {
       this.successFrames++;
       const stages = this._getSequenceStages(this.currentSign);
@@ -535,7 +927,10 @@ class SignLanguageApp {
         const pct = Math.min(100, Math.round((this.currentSign._stagePassFrames / this.STAGE_SUCCESS_FRAMES) * 100));
 
         if (this.currentSign._stagePassFrames >= this.STAGE_SUCCESS_FRAMES) {
-          if (this._advanceSequenceStage()) return;
+          if (currentIndex < stages.length - 1) {
+            this._triggerStageSuccess();
+            return;
+          }
           this._triggerSuccess();
           return;
         }
@@ -592,6 +987,7 @@ class SignLanguageApp {
   _triggerSuccess() {
     if (this.state === 'success') return;
     this.state = 'success';
+    this.modalMode = 'final';
 
     document.getElementById('modal-sign-name').textContent  = this.currentSign.name;
     document.getElementById('modal-best-score').textContent = this.bestScore;
@@ -610,11 +1006,30 @@ class SignLanguageApp {
       nextBtnText  = `다음 수어 → (${seqIdx + 2}/${seq.length})`;
     } else {
       retryBtnText = '🔄 처음부터 다시하기';
-      nextBtnText  = '다른 수화 검색하기 🔍';
+      nextBtnText  = '다른 이름 연습하기';
     }
 
     document.getElementById('modal-retry-btn').textContent = retryBtnText;
     document.getElementById('modal-next-btn').textContent  = nextBtnText;
+    document.getElementById('success-modal').style.display = 'flex';
+  }
+
+  _triggerStageSuccess() {
+    if (this.state === 'success') return;
+    const sign = this.currentSign;
+    const stages = this._getSequenceStages(sign);
+    const currentIndex = sign?._currentStageIndex ?? 0;
+    if (!sign || stages.length <= 1 || currentIndex >= stages.length - 1) {
+      this._triggerSuccess();
+      return;
+    }
+
+    this.state = 'success';
+    this.modalMode = 'stage';
+    document.getElementById('modal-sign-name').textContent = `${sign.name} ${currentIndex + 1}/${stages.length}`;
+    document.getElementById('modal-best-score').textContent = this.bestScore;
+    document.getElementById('modal-retry-btn').textContent = '🔄 다시 하기';
+    document.getElementById('modal-next-btn').textContent = `다음 단계 → (${currentIndex + 2}/${stages.length})`;
     document.getElementById('success-modal').style.display = 'flex';
   }
 
@@ -653,5 +1068,5 @@ let app;
 window.addEventListener('DOMContentLoaded', () => {
   app = new SignLanguageApp();
   window.app = app;
-  app.selectSign('num1');
+  app.selectSign('jm1');
 });

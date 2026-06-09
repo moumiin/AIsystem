@@ -105,3 +105,94 @@ function computePerFingerScores(userNorm, refPose) {
   }
   return result;
 }
+
+function computePoseDistance(userPose, refPose) {
+  if (!userPose || !refPose || userPose.length < 21 || refPose.length < 21) return 10;
+
+  let totalErr = 0;
+  let totalW = 0;
+  for (let i = 0; i < 21; i++) {
+    const [ux, uy, uz] = userPose[i];
+    const [rx, ry, rz] = refPose[i];
+    const dist = Math.sqrt((ux - rx) ** 2 + (uy - ry) ** 2 + ((uz - rz) * 0.15) ** 2);
+    totalErr += dist * LM_WEIGHTS[i];
+    totalW += LM_WEIGHTS[i];
+  }
+  return totalErr / totalW;
+}
+
+function resampleSequence(sequence, targetLength) {
+  if (!Array.isArray(sequence) || sequence.length === 0 || targetLength <= 0) return [];
+  if (sequence.length === targetLength) return sequence.slice();
+  if (targetLength === 1) return [sequence[0]];
+
+  const result = [];
+  const maxIndex = sequence.length - 1;
+  for (let i = 0; i < targetLength; i++) {
+    const idx = Math.round((i * maxIndex) / (targetLength - 1));
+    result.push(sequence[idx]);
+  }
+  return result;
+}
+
+function computeSequenceScore(userSequence, refSequence, options = {}) {
+  if (!Array.isArray(userSequence) || !Array.isArray(refSequence)) return 0;
+  const minFrames = options.minFrames || 6;
+  if (userSequence.length < minFrames || refSequence.length < 2) return 0;
+
+  const maxUserFrames = options.maxUserFrames || Math.max(refSequence.length * 2, 24);
+  const user = userSequence.length > maxUserFrames
+    ? resampleSequence(userSequence, maxUserFrames)
+    : userSequence;
+  const ref = refSequence;
+
+  const n = user.length;
+  const m = ref.length;
+  const prev = new Array(m + 1).fill(Infinity);
+  let curr = new Array(m + 1).fill(Infinity);
+  prev[0] = 0;
+
+  for (let i = 1; i <= n; i++) {
+    curr[0] = Infinity;
+    for (let j = 1; j <= m; j++) {
+      const cost = computePoseDistance(user[i - 1], ref[j - 1]);
+      curr[j] = cost + Math.min(prev[j], curr[j - 1], prev[j - 1]);
+    }
+    for (let j = 0; j <= m; j++) prev[j] = curr[j];
+    curr = new Array(m + 1).fill(Infinity);
+  }
+
+  const avgErr = prev[m] / (n + m);
+  const ratio = Math.min(1, avgErr / (options.tolerance || 0.45));
+  return Math.round(Math.max(0, (1 - ratio * ratio) * 100));
+}
+
+function pickHandSequence(handSequence, side) {
+  if (!Array.isArray(handSequence)) return [];
+  return handSequence
+    .map(frame => frame?.[side])
+    .filter(pose => Array.isArray(pose) && pose.length >= 21);
+}
+
+function computeTwoHandSequenceScore(userFrames, refHandSequence) {
+  if (!Array.isArray(userFrames) || !Array.isArray(refHandSequence)) return null;
+
+  const sideScores = {};
+  for (const side of ['left', 'right']) {
+    const ref = pickHandSequence(refHandSequence, side);
+    if (ref.length < 2) continue;
+
+    const user = userFrames
+      .map(frame => frame?.[side])
+      .filter(pose => Array.isArray(pose) && pose.length >= 21);
+
+    sideScores[side] = computeSequenceScore(user, ref);
+  }
+
+  const scores = Object.values(sideScores);
+  if (scores.length === 0) return null;
+  return {
+    score: Math.min(...scores),
+    sideScores,
+  };
+}

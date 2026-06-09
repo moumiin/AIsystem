@@ -38,7 +38,7 @@ TARGETS = {
 def download_file(api_key: str, file_id: str, dest_path: str):
     url = f"https://api.aihub.or.kr/down/1.0/{file_id}.do?apiKey={api_key}"
     print(f"\n  → 다운로드 시작: {os.path.basename(dest_path)}")
-    print(f"     URL: {url}")
+    print(f"     파일 ID: {file_id}")
 
     try:
         req  = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})

@@ -26,7 +26,7 @@ hand_sign/
 ├── aihub_keypoint_index.json   # 핵심 데이터: 1,472개 수어 단어 × 30프레임
 ├── requirements.txt            # Python 의존 패키지
 ├── startup.bat                 # 서버 실행 스크립트
-├── .env                        # API 키 (git 제외)
+├── .env                        # AIHUB_API_KEY 보관용 (git 제외)
 │
 ├── frontend/
 │   ├── index.html              # 단일 페이지 앱
@@ -36,10 +36,9 @@ hand_sign/
 │           ├── signs-data.js       # 수화 단어 목록 + 카테고리 (312개)
 │           ├── app.js              # 메인 앱 로직
 │           ├── hand-renderer.js    # Three.js 3D 손 렌더러
-│           ├── hand-trakcer.js     # MediaPipe 웹캠 추적
+│           ├── hand-tracker.js     # MediaPipe 웹캠 추적
 │           ├── gesture-scorer.js   # 포즈 유사도 점수 계산
-│           ├── gemini-search.js    # 검색 UI 모듈
-│           └── old/                # 구버전 백업 (참고용)
+│           └── sign-search.js      # 검색 UI 모듈
 │
 └── scripts/                    # 데이터 빌드 유틸리티 (운영과 무관)
     ├── build_keypoint_index.py     # 키포인트 인덱스 재빌드
@@ -61,7 +60,7 @@ hand_sign/
 [사용자]
   │
   ├─ 단어 검색 (텍스트 입력)
-  │     └─→ POST /api/gemini-search
+  │     └─→ POST /api/sign-search
   │               │
   │         ① 지문자 DB 조회 (jamo_db.py)        ← ㄱ, ㄴ, ㅏ, ㅣ 등 자음/모음
   │         ② 키포인트 인덱스 조회               ← 1,472개 실제 수어 단어
@@ -149,7 +148,7 @@ hand_sign/
 
 ```bash
 # 1. AI Hub에서 데이터 다운로드
-python scripts/download_crowd.py
+python scripts/download_crowd.py --apikey YOUR_API_KEY
 
 # 2. 키포인트 인덱스 재빌드
 python scripts/build_keypoint_index.py
@@ -165,5 +164,5 @@ python scripts/check_kp_coverage.py
 | 메서드 | 경로 | 설명 |
 |--------|------|------|
 | GET | `/` | 메인 페이지 |
-| POST | `/api/gemini-search` | 단어 검색 → 포즈/시퀀스 반환 |
+| POST | `/api/sign-search` | 단어 검색 → 포즈/시퀀스 반환 |
 | GET | `/api/jamos` | 전체 지문자 목록 반환 |

@@ -5,7 +5,7 @@ AI Hub 수어 데이터 파이프라인
   ① aihub_keypoint_index.json  (키포인트 인덱스, build_keypoint_index.py로 생성)
   ② aihub_index.json           (영상 URL 인덱스, 기존 방식)
 """
-import json, os, math, tempfile, sys
+import json, os, math, tempfile
 
 BASE_DIR        = os.path.dirname(os.path.abspath(__file__))
 INDEX_PATH      = os.path.join(BASE_DIR, "aihub_index.json")

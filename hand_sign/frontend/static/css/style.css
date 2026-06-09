@@ -178,6 +178,7 @@ body {
   white-space: nowrap;
 }
 
+
 .demo-stage-dots {
   display: flex;
   align-items: center;
@@ -632,6 +633,12 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.admin-actions .recording {
+  border-color: var(--red);
+  background: rgba(239, 68, 68, 0.18);
+  color: #fecaca;
 }
 
 .admin-status {

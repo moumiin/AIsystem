@@ -3,7 +3,7 @@ sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 async def test(q):
     async with httpx.AsyncClient(timeout=10.0) as c:
-        r = await c.post("http://localhost:8000/api/gemini-search",
+        r = await c.post("http://localhost:8000/api/sign-search",
                          json={"query": q})
         d = r.json()
         print(f"[{q}] source={d.get('source')} name={d.get('name')}")
