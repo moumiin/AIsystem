@@ -6,6 +6,11 @@ import sqlite3
 from datetime import datetime, timezone
 
 try:
+    import certifi
+except ImportError:
+    certifi = None
+
+try:
     from pymongo import ASCENDING, DESCENDING, MongoClient
     from pymongo.errors import DuplicateKeyError
 except ImportError:
@@ -231,7 +236,10 @@ class MongoAuthStore:
     def __init__(self, mongo_uri, db_name="hand_sign_learning"):
         if MongoClient is None:
             raise RuntimeError("pymongo가 설치되어 있지 않아요.")
-        self.client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
+        options = {"serverSelectionTimeoutMS": 5000}
+        if certifi is not None:
+            options["tlsCAFile"] = certifi.where()
+        self.client = MongoClient(mongo_uri, **options)
         self.client.admin.command("ping")
         self.db = self.client[db_name]
         self.users = self.db.users
@@ -395,5 +403,8 @@ class MongoAuthStore:
 
 def create_auth_store(sqlite_path, mongo_uri=None, mongo_db_name=None):
     if mongo_uri:
-        return MongoAuthStore(mongo_uri, mongo_db_name or "hand_sign_learning")
+        try:
+            return MongoAuthStore(mongo_uri, mongo_db_name or "hand_sign_learning")
+        except Exception as exc:
+            print(f"[auth_store] MongoDB connection failed, falling back to SQLite: {exc}")
     return AuthStore(sqlite_path)
