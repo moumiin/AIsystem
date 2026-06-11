@@ -271,6 +271,10 @@ class SignLanguageApp {
       this._requestAiComment();
     });
 
+    document.getElementById('modal-close-btn')?.addEventListener('click', () => {
+      this._closeModal();
+    });
+
     document.getElementById('modal-next-btn').addEventListener('click', () => {
       this._closeModal();
       if (this.isSearchMode) {
