@@ -1,0 +1,42 @@
+{
+  "안녕하세요": {
+    "title": "안녕하세요,안녕하십니까,안녕히 가십시오,안녕히 계세요",
+    "videoUrl": "http://sldict.korean.go.kr/multimedia/multimedia_files/convert/20191004/624421/MOV000244910_700X466.mp4",
+    "thumbnailUrl": "http://sldict.korean.go.kr/multimedia/multimedia_files/convert/20191004/624421/MOV000244910_215X161.jpg",
+    "sourceUrl": "http://sldict.korean.go.kr/front/sign/signContentsView.do?top_category=CTE&origin_no=3331",
+    "description": "오른 손바닥으로 주먹을 쥔 왼 팔을 쓸어내린 다음, 두 주먹을 쥐고 바닥이 아래로 향하게하여 가슴 앞에서 아래로 내린다.",
+    "categoryType": "기타"
+  },
+  "감사합니다": {
+    "title": "감사합니다,감사,고맙다",
+    "videoUrl": "http://sldict.korean.go.kr/multimedia/multimedia_files/convert/20191028/632085/MOV000243986_700X466.mp4",
+    "thumbnailUrl": "http://sldict.korean.go.kr/multimedia/multimedia_files/convert/20191028/632085/MOV000243986_215X161.jpg",
+    "sourceUrl": "http://sldict.korean.go.kr/front/sign/signContentsView.do?top_category=CTE&origin_no=2372",
+    "description": "손끝이 밖으로 향하게 펴서 모로 세운 오른손의 4지 옆면을 손바닥이 아래로 향하게 편 왼 손등에 두 번 댄다.",
+    "categoryType": "기타"
+  },
+  "고맙습니다": {
+    "title": "감사합니다,감사,고맙다",
+    "videoUrl": "http://sldict.korean.go.kr/multimedia/multimedia_files/convert/20191028/632085/MOV000243986_700X466.mp4",
+    "thumbnailUrl": "http://sldict.korean.go.kr/multimedia/multimedia_files/convert/20191028/632085/MOV000243986_215X161.jpg",
+    "sourceUrl": "http://sldict.korean.go.kr/front/sign/signContentsView.do?top_category=CTE&origin_no=2372",
+    "description": "KCISA에는 '고맙습니다' 정확 제목이 없어 '감사합니다,감사,고맙다' 항목을 연결했습니다. 손끝이 밖으로 향하게 펴서 모로 세운 오른손의 4지 옆면을 손바닥이 아래로 향하게 편 왼 손등에 두 번 댄다.",
+    "categoryType": "기타"
+  },
+  "나": {
+    "title": "나,내,제,자기",
+    "videoUrl": "http://sldict.korean.go.kr/multimedia/multimedia_files/convert/20191028/631984/MOV000248548_700X466.mp4",
+    "thumbnailUrl": "http://sldict.korean.go.kr/multimedia/multimedia_files/convert/20191028/631984/MOV000248548_215X161.jpg",
+    "sourceUrl": "http://sldict.korean.go.kr/front/sign/signContentsView.do?top_category=CTE&origin_no=11536",
+    "description": "오른 손바닥을 가슴 중앙에 댄다.",
+    "categoryType": "개념"
+  },
+  "-ㅂ니다": {
+    "title": "-ㅂ니다,-습니다",
+    "videoUrl": "http://sldict.korean.go.kr/multimedia/multimedia_files/convert/20160325/285817/MOV000285886_700X466.mp4",
+    "thumbnailUrl": "http://sldict.korean.go.kr/multimedia/multimedia_files/convert/20160325/285817/MOV000285886_215X161.jpg",
+    "sourceUrl": "http://sldict.korean.go.kr/front/sign/signContentsView.do?top_category=CTE&origin_no=19943",
+    "description": "손바닥이 위로 향하게 편 왼 손바닥에 오른 손바닥을 댔다가 오른쪽으로 내린다.",
+    "categoryType": "기타"
+  }
+}

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <script>
+    window.__appErrors = [];
+    window.addEventListener('error', (event) => {
+      window.__appErrors.push(event.message || 'unknown error');
+    });
+    window.addEventListener('unhandledrejection', (event) => {
+      window.__appErrors.push(event.reason?.message || String(event.reason));
+    });
+    if (window.location.protocol === 'file:') {
+      window.location.replace('http://localhost:8001/');
+    }
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>수어 공부!</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/static/css/style.css?v=9">
+  <style>
+    .category-tabs {
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 6px;
+      padding-bottom: 6px;
+      scrollbar-width: thin;
+      scrollbar-color: #3d4560 transparent;
+    }
+    .category-tabs::-webkit-scrollbar { height: 4px; }
+    .category-tabs::-webkit-scrollbar-thumb { background: #3d4560; border-radius: 2px; }
+    .category-tabs .tab-btn { white-space: nowrap; flex: 0 0 auto; }
+
+    .sign-search-bar {
+      background: linear-gradient(135deg, #1a1540 0%, #0f1929 100%);
+      border: 1px solid rgba(108,99,255,0.4);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .sign-search-label {
+      font-size: 0.78rem;
+      color: #8892a4;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .sign-search-badge {
+      background: linear-gradient(90deg, #6c63ff, #00d2ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+    .sign-search-row { display: flex; gap: 8px; }
+    #sign-search-input {
+      flex: 1;
+      min-width: 0;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid #252d42;
+      border-radius: 8px;
+      padding: 9px 14px;
+      color: #e2e8f0;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    #sign-search-input:focus { border-color: #6c63ff; }
+    #sign-search-input::placeholder { color: #4a5568; }
+    #sign-search-btn {
+      background: linear-gradient(135deg, #6c63ff, #00d2ff);
+      border: none;
+      border-radius: 8px;
+      padding: 9px 18px;
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    #sign-search-btn:hover { filter: brightness(1.15); }
+    .sign-search-status { font-size: 0.8rem; min-height: 18px; }
+    .sign-search-status-loading { color: #00d2ff; }
+    .sign-search-status-success { color: #22c55e; }
+    .sign-search-status-error { color: #ef4444; }
+    #sign-search-steps {
+      display: none;
+      background: rgba(108,99,255,0.08);
+      border: 1px solid rgba(108,99,255,0.2);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-top: 4px;
+    }
+    .sign-search-source-label {
+      font-size: 0.76rem;
+      color: #00d2ff;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+    .fingerspell-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 8px 0;
+    }
+    .fingerspell-nav button {
+      background: rgba(108,99,255,0.2);
+      border: 1px solid rgba(108,99,255,0.4);
+      color: #fff;
+      border-radius: 6px;
+      padding: 4px 14px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .fingerspell-nav button:disabled { opacity: 0.3; cursor: default; }
+    #openpose-demo-canvas,
+    #three-canvas,
+    #aihub-video,
+    #aihub-video-error {
+      position: absolute;
+      inset: 0;
+    }
+    #openpose-demo-canvas,
+    #three-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    #three-canvas { display: none; }
+    .demo-view-controls {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      z-index: 4;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .demo-view-controls.active { display: none; }
+    .demo-view-controls button,
+    .demo-view-angle {
+      pointer-events: auto;
+      border: 1px solid rgba(148,163,184,0.36);
+      background: rgba(15,23,42,0.78);
+      color: #e5e7eb;
+      border-radius: 6px;
+      min-width: 34px;
+      height: 30px;
+      padding: 0 10px;
+      font-size: 0.8rem;
+    }
+    .demo-view-controls button { cursor: pointer; }
+    .demo-view-angle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #93c5fd;
+      min-width: 96px;
+    }
+    .demo-depth-legend {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      z-index: 3;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      color: #cbd5e1;
+      font-size: 0.72rem;
+      background: rgba(15,23,42,0.72);
+      border: 1px solid rgba(148,163,184,0.28);
+      border-radius: 6px;
+      padding: 6px 8px;
+      pointer-events: none;
+    }
+    .demo-depth-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+    .demo-depth-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      box-shadow: 0 0 8px rgba(226,232,240,0.8);
+    }
+    .demo-depth-dot.back {
+      width: 6px;
+      height: 6px;
+      opacity: 0.45;
+      box-shadow: none;
+    }
+    .demo-fold-mark {
+      width: 12px;
+      height: 4px;
+      border-radius: 2px;
+      background: #f8fafc;
+      border: 1px solid rgba(15,23,42,0.5);
+      transform: rotate(-18deg);
+    }
+    #aihub-video-error {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      color: #8892a4;
+      font-size: 0.86rem;
+      text-align: center;
+      padding: 16px;
+    }
+    @media (max-width: 560px) {
+      .sign-search-row { flex-direction: column; }
+      #sign-search-btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <h1>수어 공부!</h1>
+    <div class="header-sub">AI 수어 교육 서비스</div>
+    <div class="auth-bar" id="auth-bar">
+      <span class="auth-user" id="auth-user">로그인 필요</span>
+      <button id="open-login-btn" type="button">로그인</button>
+      <button id="open-register-btn" type="button">회원가입</button>
+      <button id="auth-logout-btn" type="button">로그아웃</button>
+      <span class="auth-status" id="auth-status"></span>
+    </div>
+    <button class="admin-toggle" id="admin-toggle" type="button" style="display:none">관리자</button>
+  </header>
+
+  <main class="app-main">
+    <section class="sign-search-bar">
+      <div class="sign-search-label">
+        <span class="sign-search-badge">수어 검색</span>
+        <span>배우고 싶은 단어나 문장을 입력하세요</span>
+      </div>
+      <div class="sign-search-row">
+        <input type="text" id="sign-search-input" placeholder="예: 수어, 감사, 결혼식, ㄱ">
+        <button id="sign-search-btn" type="button">검색</button>
+      </div>
+      <div class="sign-search-status" id="sign-search-status"></div>
+      <div id="sign-search-steps"></div>
+    </section>
+
+    <div class="panels-row">
+      <section class="panel demo-panel">
+        <div class="panel-header">
+          <h2>시범 보기</h2>
+          <div class="sign-badge">
+            <span class="sign-badge-emoji" id="sign-badge-emoji">👋</span>
+            <span class="sign-badge-name" id="sign-badge-name">수어 선택</span>
+          </div>
+          <div class="demo-speed-control" id="demo-speed-control" aria-label="시범 재생 속도">
+            <button class="active" data-demo-speed="normal" type="button">보통</button>
+            <button data-demo-speed="slow" type="button">천천히</button>
+          </div>
+        </div>
+        <div class="canvas-wrapper">
+          <canvas id="openpose-demo-canvas" width="640" height="480"></canvas>
+          <canvas id="three-canvas" width="640" height="480"></canvas>
+          <video id="aihub-video" autoplay muted playsinline></video>
+          <div id="aihub-video-error">영상을 불러오지 못했어요. 검색 결과의 키포인트 시범으로 다시 보여드릴게요.</div>
+          <div class="demo-view-controls" id="demo-view-controls" aria-label="시범 손 회전">
+            <button id="demo-rotate-left" type="button" title="왼쪽으로 회전">◀</button>
+            <span class="demo-view-angle" id="demo-view-angle">정면 0도</span>
+            <button id="demo-rotate-right" type="button" title="오른쪽으로 회전">▶</button>
+            <button id="demo-rotate-reset" type="button" title="정면으로 보기">↺</button>
+          </div>
+          <div class="demo-depth-legend" aria-hidden="true">
+            <span><i class="demo-depth-dot"></i>앞</span>
+            <span><i class="demo-depth-dot back"></i>뒤</span>
+            <span><i class="demo-fold-mark"></i>접힘</span>
+          </div>
+        </div>
+        <div class="demo-stage-bar" id="demo-stage-bar" style="display:none">
+          <span class="demo-stage-label" id="demo-stage-label">시범 재생중 1/1</span>
+          <div class="demo-stage-dots" id="demo-stage-dots"></div>
+        </div>
+        <div class="sign-description" id="sign-description">
+          위 검색창에서 단어를 검색하거나 아래 목록에서 선택하세요
+        </div>
+      </section>
+
+      <aside class="score-center">
+        <div class="score-ring-wrapper">
+          <svg class="score-ring" viewBox="0 0 120 120">
+            <circle class="score-ring-bg" cx="60" cy="60" r="50"></circle>
+            <circle class="score-ring-fill" id="score-ring-fill" cx="60" cy="60" r="50"></circle>
+          </svg>
+          <div class="score-number">
+            <strong id="score-value">0</strong>
+            <span>점</span>
+          </div>
+        </div>
+        <div class="score-label" id="score-label">대기중</div>
+        <div class="finger-dots" aria-label="손가락 피드백">
+          <span class="finger-dot" data-finger="thumb" aria-label="엄지" title="엄지">엄</span>
+          <span class="finger-dot" data-finger="index" aria-label="검지" title="검지">검</span>
+          <span class="finger-dot" data-finger="middle" aria-label="중지" title="중지">중</span>
+          <span class="finger-dot" data-finger="ring" aria-label="약지" title="약지">약</span>
+          <span class="finger-dot" data-finger="pinky" aria-label="새끼" title="새끼">새</span>
+        </div>
+      </aside>
+
+      <section class="panel practice-panel">
+        <div class="panel-header">
+          <h2>따라하기</h2>
+          <div class="tracking-status" id="tracking-status">
+            <span class="status-dot"></span>
+            <span>카메라 대기</span>
+          </div>
+        </div>
+        <div class="webcam-wrapper">
+          <video id="webcam" autoplay muted playsinline></video>
+          <canvas id="overlay-canvas" width="640" height="480"></canvas>
+          <div class="webcam-placeholder" id="webcam-placeholder">
+            <div class="placeholder-icon">📷</div>
+            <p>카메라를 허용해주세요</p>
+          </div>
+        </div>
+        <div class="panel-footer">
+          <button class="btn btn-primary" id="start-camera-btn" type="button">카메라 시작</button>
+        </div>
+      </section>
+    </div>
+
+    <div class="bottom-info-row">
+      <div class="live-feedback" id="live-feedback">
+        <strong>실시간 피드백</strong>
+        <p>손이 보이면 기록이 시작되고, 손을 치우면 그동안의 동작으로 점수와 피드백이 표시됩니다.</p>
+      </div>
+      <div class="history-card">
+        <strong>내 학습 기록</strong>
+        <p id="history-summary">로그인하면 학습 기록이 저장됩니다.</p>
+        <ul id="history-list">
+          <li>아직 표시할 기록이 없어요.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="status-bar">
+      <span id="status-message">위 검색창에서 단어를 검색하거나 아래 목록에서 수어를 선택하세요</span>
+    </div>
+
+    <section class="sign-selector">
+      <div class="category-tabs" id="category-tabs"></div>
+      <div id="jamo-subtabs" class="jamo-subtabs" style="display:none">
+        <button class="subtab-btn active" data-jamo-type="consonants" type="button">자음</button>
+        <button class="subtab-btn" data-jamo-type="vowels" type="button">모음</button>
+      </div>
+      <div class="sign-grid" id="sign-grid"></div>
+    </section>
+  </main>
+
+  <div class="modal-overlay" id="success-modal" style="display:none">
+    <div class="modal">
+      <div class="modal-icon" id="modal-icon">🎉</div>
+      <h2 id="modal-title">완벽해요!</h2>
+      <p class="modal-sign" id="modal-sign-name"></p>
+      <p class="modal-score" id="modal-score-line">점수: <span id="modal-best-score">0</span>점</p>
+
+      <div class="modal-breakdown" id="modal-breakdown">
+        <div class="breakdown-row" data-part="pose">
+          <span class="breakdown-label">손모양</span>
+          <span class="breakdown-bar"><i class="breakdown-fill" id="bd-pose-fill"></i></span>
+          <span class="breakdown-score" id="bd-pose-score">0</span>
+        </div>
+        <div class="breakdown-row" data-part="traj">
+          <span class="breakdown-label">이동경로</span>
+          <span class="breakdown-bar"><i class="breakdown-fill" id="bd-traj-fill"></i></span>
+          <span class="breakdown-score" id="bd-traj-score">0</span>
+        </div>
+        <div class="breakdown-row" data-part="move">
+          <span class="breakdown-label">움직임</span>
+          <span class="breakdown-bar"><i class="breakdown-fill" id="bd-move-fill"></i></span>
+          <span class="breakdown-score" id="bd-move-score">0</span>
+        </div>
+      </div>
+
+      <div class="modal-ai-coach">
+        <button class="btn btn-secondary" id="modal-ai-btn" type="button">🤖 AI 코치 코멘트 받기</button>
+        <p class="modal-ai-comment" id="modal-ai-comment"></p>
+      </div>
+
+      <p class="modal-save-note" id="modal-save-note"></p>
+      <div class="modal-btns">
+        <button class="btn btn-secondary" id="modal-retry-btn" type="button">다시 하기</button>
+        <button class="btn btn-primary" id="modal-next-btn" type="button">다음 수어</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-modal-overlay" id="login-modal" aria-hidden="true">
+    <form class="auth-modal" id="login-form">
+      <div class="auth-modal-head">
+        <h2>로그인</h2>
+        <button class="auth-modal-close" type="button" data-auth-close>x</button>
+      </div>
+      <label for="login-username">아이디</label>
+      <input id="login-username" type="text" autocomplete="username" placeholder="아이디를 입력하세요">
+      <label for="login-password">비밀번호</label>
+      <input id="login-password" type="password" autocomplete="current-password" placeholder="비밀번호를 입력하세요">
+      <p class="auth-modal-message" id="login-message"></p>
+      <button class="btn btn-primary" type="submit">로그인</button>
+      <button class="auth-link-btn" id="switch-to-register" type="button">아직 계정이 없으면 회원가입</button>
+    </form>
+  </div>
+
+  <div class="auth-modal-overlay" id="register-modal" aria-hidden="true">
+    <form class="auth-modal" id="register-form">
+      <div class="auth-modal-head">
+        <h2>회원가입</h2>
+        <button class="auth-modal-close" type="button" data-auth-close>x</button>
+      </div>
+      <label for="register-username">아이디</label>
+      <input id="register-username" type="text" autocomplete="username" placeholder="3글자 이상">
+      <label for="register-password">비밀번호</label>
+      <input id="register-password" type="password" autocomplete="new-password" placeholder="4글자 이상">
+      <label for="register-display-name">이름</label>
+      <input id="register-display-name" type="text" autocomplete="nickname" placeholder="화면에 표시될 이름">
+      <p class="auth-modal-message" id="register-message"></p>
+      <button class="btn btn-primary" type="submit">회원가입</button>
+      <button class="auth-link-btn" id="switch-to-login" type="button">이미 계정이 있으면 로그인</button>
+    </form>
+  </div>
+
+  <div class="auth-modal-overlay" id="onboarding-modal" aria-hidden="true">
+    <div class="auth-modal onboarding-modal">
+      <div class="onboarding-emoji">👋</div>
+      <h2 id="onboarding-title">환영합니다!</h2>
+      <p class="onboarding-desc" id="onboarding-desc">먼저 자신의 이름을 포함한 인사 수어를 배워볼까요?</p>
+      <p class="onboarding-phrase" id="onboarding-phrase"></p>
+      <div class="onboarding-btns">
+        <button class="btn btn-primary" id="onboarding-start-btn" type="button">바로 배워보기 🤟</button>
+        <button class="btn btn-secondary" id="onboarding-skip-btn" type="button">나중에</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-modal-overlay" id="admin-pw-modal" aria-hidden="true">
+    <form class="auth-modal" id="admin-pw-form">
+      <div class="auth-modal-head">
+        <h2>🔐 관리자 인증</h2>
+        <button class="auth-modal-close" type="button" id="admin-pw-close">x</button>
+      </div>
+      <label for="admin-pw-input">비밀번호</label>
+      <input id="admin-pw-input" type="password" placeholder="관리자 비밀번호를 입력하세요">
+      <p class="auth-modal-message" id="admin-pw-message"></p>
+      <button class="btn btn-primary" type="submit">확인</button>
+    </form>
+  </div>
+
+  <div class="admin-drawer" id="admin-drawer" aria-hidden="true">
+    <div class="admin-panel">
+      <div class="admin-panel-head">
+        <div>
+          <h2>관리자 모드</h2>
+          <p>현재 카메라 손 자세를 캡처해서 수어 자세 데이터로 확인합니다.</p>
+        </div>
+        <button class="admin-close" id="admin-close" type="button">x</button>
+      </div>
+      <div class="admin-current">
+        <span>선택된 수어</span>
+        <strong id="admin-current-sign">없음</strong>
+      </div>
+      <div class="admin-actions">
+        <button class="btn btn-primary" id="admin-capture-btn" type="button">카메라 자세 캡처</button>
+        <button class="btn btn-secondary" id="admin-preview-btn" type="button">캡처 자세 미리보기</button>
+        <button class="btn btn-secondary" id="admin-copy-btn" type="button">추출 코드 복사</button>
+        <button class="btn btn-secondary" id="admin-ai-sample-btn" type="button">AI 샘플 저장</button>
+        <button class="btn btn-secondary" id="admin-ai-train-btn" type="button">지문자 AI 학습</button>
+      </div>
+      <div class="admin-status" id="admin-status">카메라를 켠 뒤 수정할 수어를 고르고, 올바른 손 자세를 화면에 보여주세요.</div>
+      <label class="admin-label" for="admin-export">추출 코드</label>
+      <textarea id="admin-export" class="admin-export" spellcheck="false" placeholder="캡처한 자세 데이터가 여기에 표시됩니다."></textarea>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+  <script src="/static/js/signs-data.js?v=20"></script>
+  <script src="/static/js/gesture-scorer.js?v=16"></script>
+  <script src="/static/js/feedback-coach.js?v=1"></script>
+  <script src="/static/js/hand-tracker.js?v=8"></script>
+  <script src="/static/js/sign-search.js?v=13"></script>
+  <script src="/static/js/auth.js?v=3"></script>
+  <script src="/static/js/app.js?v=99"></script>
+  <script src="/static/js/admin-mode.js?v=3"></script>
+</body>
+</html>
