@@ -1,4 +1,7 @@
 # AIsystem 9조
+
+링크 : https://aisystem-sgcn.onrender.com/
+
 듀오링고를 예시 => 단어가 뜨면 수화 구현 / 문제 형식 / 점수 구현
 
 학교 => 학교와 관한 단어
